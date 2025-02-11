@@ -1,6 +1,6 @@
 
 const transporter=require("./mailcode");
-const { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE } = require("./emailDesign");
+const { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE } = require("./emailDesign");
 
 
 const sender = {
@@ -49,14 +49,14 @@ const sendForgotPasswordEmail=async(email,resetURL)=>{
 
 }
 
-const sendResetSuccessEmail=async(email,token)=>{
+const sendResetSuccessEmail=async(email)=>{
   const recipient=email
 
   const mailOptions = {
     from: sender.email, // Sender's email address
     to: recipient, // Recipient's email address
-    subject: "Verify your email", // Email subject
-    html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{verificationCode}", verificationToken), // Email body (with replaced verification code)
+    subject: "Success Password changed", 
+    html: PASSWORD_RESET_SUCCESS_TEMPLATE
   };
 
   try {
@@ -74,4 +74,4 @@ const sendResetSuccessEmail=async(email,token)=>{
 }
 
 
-module.exports = { sendVerificationEmail,sendForgotPasswordEmail };
+module.exports = { sendVerificationEmail,sendForgotPasswordEmail,sendResetSuccessEmail };
