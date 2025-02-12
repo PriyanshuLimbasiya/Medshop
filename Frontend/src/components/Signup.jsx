@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SignupService } from './services/SignupService';
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -6,9 +7,28 @@ const Signup = () => {
         password: ''
     });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
-        // Handle signup logic here
+        try {
+            const response=await SignupService(formData.email, formData.password);
+            console.log(response);
+            
+            if(response.status===200){
+                localStorage.setItem('token', response.data.token);
+                navigate('/');
+            }
+            else{
+                setFormData({...formData, password: ''});
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: response.message || "Email and Password are incorrect",
+                });
+            }
+        } catch (error) {
+            console.error("Error in Signup",error);
+            throw error;
+        }
     };
 
     return (
