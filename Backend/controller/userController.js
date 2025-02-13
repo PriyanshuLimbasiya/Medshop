@@ -90,6 +90,7 @@ const verification = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 const login = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -101,7 +102,7 @@ const login = async (req, res) => {
         .json({ success: false, message: "Invalid Creditentials" });
     }
     const isPassword = await bcryptjs.compare(password, user.password);
-    if (!password) {
+    if (!isPassword) {
       return res
         .status(400)
         .json({ success: false, message: "Invalid Creditentials" });
@@ -198,8 +199,7 @@ const resetPassword = async (req, res) => {
 };
 
 const checkAuth = async (req, res) => {
-  try {
-    
+  try {   
     res
       .status(200)
       .json({ success: true, user: { ...req.user._doc, password: undefined } });

@@ -11,9 +11,13 @@ connectDB() // Connect to the database
   .then(() => {
     // If DB connection is successful, set up the Express app
     const app = express();
-    app.use(cors());
-    app.use(express.json());
     app.use(cookieParser());
+    app.use(cors({
+      credentials:true,
+      origin:"http://localhost:5173"
+    }));
+    app.use(express.json());
+   
     app.use("/api/auth", userRoute);
     
 
