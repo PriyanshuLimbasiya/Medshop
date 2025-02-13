@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { SignupService } from './services/SignupService';
 
 const Signup = () => {
+    const[isSignUp,setIsSignUp]=useState(true)
     const [formData, setFormData] = useState({
         email: '',
+        name:'',
         password: ''
     });
 
