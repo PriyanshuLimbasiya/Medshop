@@ -9,14 +9,12 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<DashBoard />} />
+        <Route path="/" element={<Signup isSignUp={false} />} />
+        <Route path="/dash" element={<DashBoard />} />
         <Route path="/signup" element={<Signup isSignUp={true} />} />
         <Route path="/login" element={<Signup isSignUp={false} />} />
         <Route path="/verification" element={<OtpForm />} />
-        {/* <Route path="/logout" element={<Logout />} />
-         
-          <Route path="/forgotpassword" element={<ForgotPassword />} />
-          <Route path="/resetpassword/:token" element={<ResetPassword />} /> */}
+
 
       </Routes>
     </Router>

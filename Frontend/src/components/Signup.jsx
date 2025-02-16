@@ -3,6 +3,7 @@ import { SignupService } from './services/SignupService';
 import Swal from 'sweetalert2';
 import LoginService from './services/LoginService';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Signup = ({ isSignUp }) => {
     const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const Signup = ({ isSignUp }) => {
         name: '',
         password: ''
     });
+    const navigate = useNavigate();
     const [otp, setOtp] = useState('');
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -26,11 +28,11 @@ const Signup = ({ isSignUp }) => {
         try {
             if (isSignUp) {
                 const response = await SignupService(formData.email, formData.name, formData.password);
-                Swal.fire("Signup Successful", "OTP has been sent to your email.", "success");
+                Swal.fire("OTP SENT", "OTP has been sent to your email.", "success");
                 setIsOtpSent(true);
                 setShowOtpInput(true); // Show OTP input field
             } else {
-                
+
                 const response = await LoginService(formData.email, formData.password);
                 Swal.fire("Login Successful", "Welcome Back!", "success");
             }
@@ -43,21 +45,21 @@ const Signup = ({ isSignUp }) => {
 
     const handleOtpVerification = async () => {
         try {
-            const response = await axios.post(OTP_VERIFY_API, { 
+            const response = await axios.post(OTP_VERIFY_API, {
                 email: formData.email,  // Ensure email is included
-                code: otp               // Match the "code" key from backend
+                code: otp          // Match the "code" key from backend
             });
-    
+
             Swal.fire("OTP Verified", "Your email has been successfully verified!", "success");
-    
+
             setShowOtpInput(false); // Hide OTP input field after successful verification
         } catch (error) {
             setError("OTP verification failed");
             Swal.fire("Error", error.response?.data?.message || "Invalid OTP. Please try again.", "error");
         }
     };
-    
-    
+
+
 
     return (
         <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
@@ -154,10 +156,13 @@ const Signup = ({ isSignUp }) => {
                                         <button
                                             type="button"
                                             className="btn btn-success w-100 btn-lg mb-4"
-                                            onClick={()=>{
+                                            onClick={() => {
                                                 handleOtpVerification();
-                                                setInterval(navigate("/login"),2000)
+                                                setTimeout(() => {
+                                                    navigate("/login");
+                                                }, 2000);
                                                 setOtp('');
+                                                formData(formData.email = "", formData.name = "", formData.password = "")
                                             }}
                                         >
                                             Verify OTP
