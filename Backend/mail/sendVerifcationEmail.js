@@ -1,6 +1,6 @@
 
-const transporter = require("./mailcode");
 const { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE } = require("./emailDesign");
+const transporter = require("./mailcode");
 
 
 const sender = {
@@ -9,19 +9,16 @@ const sender = {
 };
 
 const sendVerificationEmail = async (email, verificationToken) => {
-  const recipient = email;
-
-  // Check if the template is defined
   if (!VERIFICATION_EMAIL_TEMPLATE) {
     console.error("Verification email template is undefined.");
     throw new Error("Verification email template is not defined.");
   }
 
   const mailOptions = {
-    from: sender.email, // Sender's email address
-    to: recipient, // Recipient's email address
-    subject: "Verify your email", // Email subject
-    html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", verificationToken), // Email body (with replaced verification code)
+    from: "your-email@example.com", // Replace with actual sender email
+    to: email,
+    subject: "Verify your email",
+    html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", verificationToken),
   };
 
   try {
@@ -68,7 +65,7 @@ const sendResetSuccessEmail = async (email) => {
   try {
     const info = await transporter.sendMail(mailOptions);
     console.log("Email Sent:", info.response);
-
+    
 
   } catch (error) {
     console.error("Reset Password Error", error);

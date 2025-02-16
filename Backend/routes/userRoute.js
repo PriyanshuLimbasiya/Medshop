@@ -20,7 +20,7 @@ router.post("/login", login);
 
 router.post("/logout", logout);
 
-router.post("/verification",verifyToken, verification);
+router.post("/verification", verification);
 
 router.post("/forgotpassword", forgotPassword);
 

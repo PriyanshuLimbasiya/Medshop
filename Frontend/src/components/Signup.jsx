@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { SignupService } from './services/SignupService';
 import Swal from 'sweetalert2';
 import LoginService from './services/LoginService';
+import axios from 'axios';
 
 const Signup = ({ isSignUp }) => {
     const [formData, setFormData] = useState({
@@ -12,7 +13,10 @@ const Signup = ({ isSignUp }) => {
     const [otp, setOtp] = useState('');
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [isOtpSent, setIsOtpSent] = useState(false); // To track if OTP has been sent
+    const [isOtpSent, setIsOtpSent] = useState(false);
+    const [showOtpInput, setShowOtpInput] = useState(false); // Controls OTP input visibility
+
+    const OTP_VERIFY_API = "http://localhost:5000/api/auth/verification";
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,9 +26,11 @@ const Signup = ({ isSignUp }) => {
         try {
             if (isSignUp) {
                 const response = await SignupService(formData.email, formData.name, formData.password);
-                Swal.fire("Signup Successful", "Please check your email for the OTP", "success");
-                setIsOtpSent(true); // OTP sent
+                Swal.fire("Signup Successful", "OTP has been sent to your email.", "success");
+                setIsOtpSent(true);
+                setShowOtpInput(true); // Show OTP input field
             } else {
+                
                 const response = await LoginService(formData.email, formData.password);
                 Swal.fire("Login Successful", "Welcome Back!", "success");
             }
@@ -37,15 +43,21 @@ const Signup = ({ isSignUp }) => {
 
     const handleOtpVerification = async () => {
         try {
-            // Call your OTP verification service here
-            const response = await axios.post('http://localhost:5000/api/auth/verify-otp', { email: formData.email, otp });
-            Swal.fire("OTP Verified", "You have successfully verified your OTP", "success");
-            // Redirect or take further actions after OTP verification
+            const response = await axios.post(OTP_VERIFY_API, { 
+                email: formData.email,  // Ensure email is included
+                code: otp               // Match the "code" key from backend
+            });
+    
+            Swal.fire("OTP Verified", "Your email has been successfully verified!", "success");
+    
+            setShowOtpInput(false); // Hide OTP input field after successful verification
         } catch (error) {
             setError("OTP verification failed");
-            Swal.fire("Error", "Invalid OTP. Please try again.", "error");
+            Swal.fire("Error", error.response?.data?.message || "Invalid OTP. Please try again.", "error");
         }
     };
+    
+    
 
     return (
         <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
@@ -112,7 +124,7 @@ const Signup = ({ isSignUp }) => {
                                         />
                                     </div>
 
-                                    {isOtpSent && (
+                                    {showOtpInput && (
                                         <div className="mb-4">
                                             <label className="form-label">
                                                 <i className="fas fa-key me-2 text-primary"></i>
@@ -131,16 +143,22 @@ const Signup = ({ isSignUp }) => {
 
                                     {error && <p className="text-danger">{error}</p>}
 
-                                    <button type="submit" className="btn btn-primary w-100 btn-lg mb-4" disabled={loading}>
-                                        <i className={isSignUp ? "fas fa-user-plus me-2" : "fas fa-sign-in-alt me-2"}></i>
-                                        {loading ? "Processing..." : isSignUp ? "Sign Up" : "Login"}
-                                    </button>
+                                    {!showOtpInput && (
+                                        <button type="submit" className="btn btn-primary w-100 btn-lg mb-4" disabled={loading}>
+                                            <i className={isSignUp ? "fas fa-user-plus me-2" : "fas fa-sign-in-alt me-2"}></i>
+                                            {loading ? "Processing..." : isSignUp ? "Sign Up" : "Login"}
+                                        </button>
+                                    )}
 
-                                    {isOtpSent && (
+                                    {showOtpInput && (
                                         <button
                                             type="button"
                                             className="btn btn-success w-100 btn-lg mb-4"
-                                            onClick={handleOtpVerification}
+                                            onClick={()=>{
+                                                handleOtpVerification();
+                                                setInterval(navigate("/login"),2000)
+                                                setOtp('');
+                                            }}
                                         >
                                             Verify OTP
                                         </button>

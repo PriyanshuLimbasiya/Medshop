@@ -59,37 +59,49 @@ const signup = async (req, res) => {
 };
 
 const verification = async (req, res) => {
-  const { code } = req.body;
+  const { email, code } = req.body; // Include email in the request
+
   try {
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Find the verification token
     const token = await TokenModel.findOne({
-      user: req.user,
+      user: user._id,
       type: "verification",
       token: code,
       expiry: { $gt: Date.now() },
     });
+
     if (!token) {
       return res
         .status(400)
         .json({ message: "Invalid or expired verification code" });
     }
 
-    req.user.isVerified = true;
-
-    await req.user.save();
+    // Mark user as verified
+    user.isVerified = true;
+    await user.save();
     await token.deleteOne();
 
     res.status(200).json({
       success: true,
       message: "Email verified successfully",
       user: {
-        ...req.user._doc,
-        password: undefined,
+        ...user._doc,
+        password: undefined, // Remove password from response
       },
     });
   } catch (error) {
+    console.error("Verification error:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 const login = async (req, res) => {
   const { email, password } = req.body;
