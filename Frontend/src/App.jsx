@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import DashBoard from "./components/Dashboard";
 import Signup from "./components/Signup";
 import OtpForm from "./components/OtpForm";
+import DashBoard from "./components/DashBoard";
 
 
 function App() {

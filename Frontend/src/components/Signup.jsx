@@ -30,11 +30,15 @@ const Signup = ({ isSignUp }) => {
                 const response = await SignupService(formData.email, formData.name, formData.password);
                 Swal.fire("OTP SENT", "OTP has been sent to your email.", "success");
                 setIsOtpSent(true);
-                setShowOtpInput(true); // Show OTP input field
+                setShowOtpInput(true);
             } else {
-
                 const response = await LoginService(formData.email, formData.password);
+
+                // ✅ Save authentication token in localStorage
+                localStorage.setItem("authToken", response.data.token);
+
                 Swal.fire("Login Successful", "Welcome Back!", "success");
+                navigate("/dash"); // Redirect to dashboard
             }
         } catch (error) {
             setError(error.response?.data?.message || (isSignUp ? "Signup failed" : "Login failed"));
@@ -42,6 +46,7 @@ const Signup = ({ isSignUp }) => {
             setLoading(false);
         }
     };
+
 
     const handleOtpVerification = async () => {
         try {
@@ -146,9 +151,14 @@ const Signup = ({ isSignUp }) => {
                                     {error && <p className="text-danger">{error}</p>}
 
                                     {!showOtpInput && (
-                                        <button type="submit" className="btn btn-primary w-100 btn-lg mb-4" disabled={loading}>
+                                        <button type="submit" className="btn btn-primary w-100 btn-lg mb-4" onClick={() => {
+                                            if (isSignUp == false) {
+                                                navigate("/dash")
+                                            }
+                                        }} disabled={loading}>
                                             <i className={isSignUp ? "fas fa-user-plus me-2" : "fas fa-sign-in-alt me-2"}></i>
                                             {loading ? "Processing..." : isSignUp ? "Sign Up" : "Login"}
+
                                         </button>
                                     )}
 
