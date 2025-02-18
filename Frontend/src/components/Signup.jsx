@@ -34,8 +34,7 @@ const Signup = ({ isSignUp }) => {
             } else {
                 const response = await LoginService(formData.email, formData.password);
 
-                // ✅ Save authentication token in localStorage
-                localStorage.setItem("authToken", response.data.token);
+               
 
                 Swal.fire("Login Successful", "Welcome Back!", "success");
                 navigate("/dash"); // Redirect to dashboard

@@ -13,9 +13,6 @@ function App() {
         <Route path="/dash" element={<DashBoard />} />
         <Route path="/signup" element={<Signup isSignUp={true} />} />
         <Route path="/login" element={<Signup isSignUp={false} />} />
-        <Route path="/verification" element={<OtpForm />} />
-
-
       </Routes>
     </Router>
   );
