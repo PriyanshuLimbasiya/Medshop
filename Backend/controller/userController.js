@@ -207,11 +207,11 @@ const resetPassword = async (req, res) => {
         password: undefined,
       },
     });
-  } catch (error) {}
+  } catch (error) { }
 };
 
 const checkAuth = async (req, res) => {
-  try {   
+  try {
     res
       .status(200)
       .json({ success: true, user: { ...req.user._doc, password: undefined } });

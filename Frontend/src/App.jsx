@@ -1,11 +1,22 @@
+import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Signup from "./components/Signup";
-import OtpForm from "./components/OtpForm";
 import DashBoard from "./components/DashBoard";
-
-
+import PreLoader from "./components/utils/PreLoader";
 function App() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  }, []);
+
+  if (loading) {
+    return <PreLoader />;
+  }
+
   return (
     <Router>
       <Routes>

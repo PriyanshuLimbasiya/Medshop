@@ -16,7 +16,9 @@ const Signup = ({ isSignUp }) => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [isOtpSent, setIsOtpSent] = useState(false);
-    const [showOtpInput, setShowOtpInput] = useState(false); // Controls OTP input visibility
+    const [showOtpInput, setShowOtpInput] = useState(false);
+    const [otpLoading, setOtpLoading] = useState(false);
+
 
     const OTP_VERIFY_API = "http://localhost:5000/api/auth/verification";
 
@@ -33,9 +35,7 @@ const Signup = ({ isSignUp }) => {
                 setShowOtpInput(true);
             } else {
                 const response = await LoginService(formData.email, formData.password);
-
-               
-
+                console.log(response.user.name);
                 Swal.fire("Login Successful", "Welcome Back!", "success");
                 navigate("/dash"); // Redirect to dashboard
             }
@@ -48,20 +48,27 @@ const Signup = ({ isSignUp }) => {
 
 
     const handleOtpVerification = async () => {
+        setOtpLoading(true);
         try {
             const response = await axios.post(OTP_VERIFY_API, {
-                email: formData.email,  // Ensure email is included
-                code: otp          // Match the "code" key from backend
+                email: formData.email,
+                code: otp
             });
 
             Swal.fire("OTP Verified", "Your email has been successfully verified!", "success");
 
-            setShowOtpInput(false); // Hide OTP input field after successful verification
+            setFormData({ email: "", name: "", password: "" });
+            setOtp("");
+            navigate("/login");
         } catch (error) {
             setError("OTP verification failed");
             Swal.fire("Error", error.response?.data?.message || "Invalid OTP. Please try again.", "error");
+        } finally {
+            setOtpLoading(false);
         }
     };
+
+
 
 
 
@@ -127,7 +134,9 @@ const Signup = ({ isSignUp }) => {
                                             value={formData.password}
                                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                             required
+                                            autoComplete="off"
                                         />
+
                                     </div>
 
                                     {showOtpInput && (
@@ -150,11 +159,7 @@ const Signup = ({ isSignUp }) => {
                                     {error && <p className="text-danger">{error}</p>}
 
                                     {!showOtpInput && (
-                                        <button type="submit" className="btn btn-primary w-100 btn-lg mb-4" onClick={() => {
-                                            if (isSignUp == false) {
-                                                navigate("/dash")
-                                            }
-                                        }} disabled={loading}>
+                                        <button type="submit" className="btn btn-primary w-100 btn-lg mb-4" disabled={loading}>
                                             <i className={isSignUp ? "fas fa-user-plus me-2" : "fas fa-sign-in-alt me-2"}></i>
                                             {loading ? "Processing..." : isSignUp ? "Sign Up" : "Login"}
 
@@ -165,17 +170,13 @@ const Signup = ({ isSignUp }) => {
                                         <button
                                             type="button"
                                             className="btn btn-success w-100 btn-lg mb-4"
-                                            onClick={() => {
-                                                handleOtpVerification();
-                                                setTimeout(() => {
-                                                    navigate("/login");
-                                                }, 2000);
-                                                setOtp('');
-                                                formData(formData.email = "", formData.name = "", formData.password = "")
-                                            }}
+                                            onClick={handleOtpVerification}
+                                            disabled={otpLoading}
                                         >
-                                            Verify OTP
+                                            {otpLoading ? "Verifying..." : "Verify OTP"}
                                         </button>
+
+
                                     )}
 
                                     <div className="text-center">

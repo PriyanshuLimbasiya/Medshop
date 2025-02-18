@@ -7,28 +7,11 @@ const DashBoard = () => {
     const [userData, setUserData] = useState({ name: "" });
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const token = localStorage.getItem("authToken");
-                if (!token) return;
-
-                const response = await axios.get("http://localhost:5000/api/auth/check-auth", {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                setUserData(response.data.user);
-            } catch (error) {
-                console.error("Failed to fetch user data", error);
-                localStorage.removeItem("authToken");
-                navigate("/login");
-            }
-        };
-
-        fetchUserData();
-    }, [navigate]);
+    const user = async (name) => {
+        c
+    }
 
     const handleLogout = () => {
-        localStorage.removeItem("authToken");
         navigate("/login");
     };
 
@@ -256,4 +239,4 @@ const DashBoard = () => {
     );
 };
 
-export default DashBoard;
+export default DashBoard;   
