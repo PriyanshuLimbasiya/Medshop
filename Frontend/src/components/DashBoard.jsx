@@ -7,9 +7,8 @@ const DashBoard = () => {
     const [userData, setUserData] = useState({ name: "" });
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    const user = async (name) => {
-        c
-    }
+
+
 
     const handleLogout = () => {
         navigate("/login");

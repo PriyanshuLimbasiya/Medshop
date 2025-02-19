@@ -35,7 +35,6 @@ const Signup = ({ isSignUp }) => {
                 setShowOtpInput(true);
             } else {
                 const response = await LoginService(formData.email, formData.password);
-                console.log(response.user.name);
                 Swal.fire("Login Successful", "Welcome Back!", "success");
                 navigate("/dash"); // Redirect to dashboard
             }
