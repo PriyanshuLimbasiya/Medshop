@@ -4,7 +4,7 @@ import axios from 'axios';
 const DashBoard = () => {
     const navigate = useNavigate();
     const [userData, setUserData] = useState({ name: "" });
-    // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -68,13 +68,13 @@ const DashBoard = () => {
                         </a>
 
                         {/* Mobile Toggle Button */}
-                        {/* <button
+                        <button
                             className="navbar-toggler"
                             type="button"
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         >
                             <span className="navbar-toggler-icon"></span>
-                        </button> */}
+                        </button>
 
                         {/* Collapsible Content */}
                         <div className={``}>
