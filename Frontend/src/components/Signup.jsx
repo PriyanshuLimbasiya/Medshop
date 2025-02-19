@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SignupService } from './services/SignupService';
 import Swal from 'sweetalert2';
 import LoginService from './services/LoginService';
@@ -19,6 +19,13 @@ const Signup = ({ isSignUp }) => {
     const [showOtpInput, setShowOtpInput] = useState(false);
     const [otpLoading, setOtpLoading] = useState(false);
 
+    useEffect(()=>{
+    
+            setIsOtpSent(false);
+            setShowOtpInput(false);
+        
+           
+    },[isSignUp])
 
     const OTP_VERIFY_API = "http://localhost:5000/api/auth/verification";
 
@@ -31,10 +38,12 @@ const Signup = ({ isSignUp }) => {
             if (isSignUp) {
                 const response = await SignupService(formData.email, formData.name, formData.password);
                 Swal.fire("OTP SENT", "OTP has been sent to your email.", "success");
-                setIsOtpSent(true);
-                setShowOtpInput(true);
+               
             } else {
+                
                 const response = await LoginService(formData.email, formData.password);
+            
+                localStorage.setItem('token',response.token)
                 Swal.fire("Login Successful", "Welcome Back!", "success");
                 navigate("/dash"); // Redirect to dashboard
             }
@@ -53,6 +62,7 @@ const Signup = ({ isSignUp }) => {
                 email: formData.email,
                 code: otp
             });
+            
 
             Swal.fire("OTP Verified", "Your email has been successfully verified!", "success");
 
@@ -101,6 +111,7 @@ const Signup = ({ isSignUp }) => {
                                             value={formData.email}
                                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                             required
+                                            disabled={isOtpSent}
                                         />
                                     </div>
 
@@ -117,6 +128,7 @@ const Signup = ({ isSignUp }) => {
                                                 value={formData.name}
                                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                                 required
+                                                disabled={isOtpSent}
                                             />
                                         </div>
                                     )}
@@ -134,6 +146,7 @@ const Signup = ({ isSignUp }) => {
                                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                             required
                                             autoComplete="off"
+                                            disabled={isOtpSent}
                                         />
 
                                     </div>
@@ -151,6 +164,7 @@ const Signup = ({ isSignUp }) => {
                                                 value={otp}
                                                 onChange={(e) => setOtp(e.target.value)}
                                                 required
+                                            
                                             />
                                         </div>
                                     )}

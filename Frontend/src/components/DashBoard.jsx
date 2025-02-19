@@ -1,16 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-
+import axios from 'axios';
 const DashBoard = () => {
     const navigate = useNavigate();
     const [userData, setUserData] = useState({ name: "" });
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const token = localStorage.getItem("token"); // Get token from localStorage
+               
+                if (!token) {
+                    return navigate("/");
+                }
 
+                const response = await axios.get("http://localhost:5000/api/auth/check-auth", {
+                    headers: { Authorization: `Bearer ${token}` }, 
+                });
+            
+                
+                 setUserData(response.data.user);
+            } catch (error) {
+                console.log("Error",error);
+                navigate("/")
+                
+            }
+        };
 
+        fetchUser();
+    }, []);
 
     const handleLogout = () => {
+        localStorage.clear();
         navigate("/login");
     };
 
@@ -46,16 +68,16 @@ const DashBoard = () => {
                         </a>
 
                         {/* Mobile Toggle Button */}
-                        <button
+                        {/* <button
                             className="navbar-toggler"
                             type="button"
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         >
                             <span className="navbar-toggler-icon"></span>
-                        </button>
+                        </button> */}
 
                         {/* Collapsible Content */}
-                        <div className={`collapse navbar-collapse ${isMobileMenuOpen ? 'show' : ''}`}>
+                        <div className={``}>
                             <div className="d-lg-flex align-items-center ms-auto">
                                 {/* Search Bar - Full width on mobile */}
                                 <div className="my-2 my-lg-0 mx-lg-2 flex-grow-1" style={{ maxWidth: '300px' }}>
@@ -85,7 +107,7 @@ const DashBoard = () => {
                                         data-bs-toggle="dropdown"
                                     >
                                         <i className="fas fa-user-circle me-2"></i>
-                                        {userData.name || "User"}
+                                        {userData.name}
                                     </button>
                                     <ul className="dropdown-menu dropdown-menu-end">
                                         <li>
@@ -125,6 +147,7 @@ const DashBoard = () => {
                         ))}
                     </div>
 
+                    {/* Rest of the code remains unchanged */}
                     {/* Main Content Grid */}
                     <div className="row g-3">
                         {/* Low Stock Table */}
@@ -238,4 +261,4 @@ const DashBoard = () => {
     );
 };
 
-export default DashBoard;   
+export default DashBoard;

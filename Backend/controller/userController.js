@@ -10,6 +10,7 @@ const {
   sendResetSuccessEmail,
 } = require("../mail/sendVerifcationEmail");
 const TokenModel = require("../models/Token.model");
+const jwt = require("jsonwebtoken");
 
 const signup = async (req, res) => {
   const { email, password, name } = req.body;
@@ -119,12 +120,16 @@ const login = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid Creditentials" });
     }
-    generateToken(res, user._id);
+    // generateToken(res, user._id);
+    
     user.lastlogin = new Date();
-    await user.save();
+     user.save();
+     const token = jwt.sign({ userid:user._id }, process.env.JWT_SECRET,{ algorithm: "HS256", expiresIn: "1d" });
+     
     res.status(200).json({
       success: true,
       message: "Logged in successfully",
+      token,
       user: {
         ...user._doc,
         password: undefined,

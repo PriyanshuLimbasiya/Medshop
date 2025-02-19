@@ -9,7 +9,6 @@ dotenv.config();
   
 connectDB() // Connect to the database
   .then(() => {
-    // If DB connection is successful, set up the Express app
     const app = express();
     app.use(cookieParser());
     app.use(cors({
@@ -19,7 +18,6 @@ connectDB() // Connect to the database
     app.use(express.json());
    
     app.use("/api/auth", userRoute);
-    
 
     // Start the server
     app.listen(process.env.PORT || 5000, () => {
