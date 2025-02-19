@@ -121,11 +121,11 @@ const login = async (req, res) => {
         .json({ success: false, message: "Invalid Creditentials" });
     }
     // generateToken(res, user._id);
-    
+
     user.lastlogin = new Date();
-     user.save();
-     const token = jwt.sign({ userid:user._id }, process.env.JWT_SECRET,{ algorithm: "HS256", expiresIn: "1d" });
-     
+    user.save();
+    const token = jwt.sign({ userid: user._id }, process.env.JWT_SECRET, { algorithm: "HS256", expiresIn: "1d" });
+
     res.status(200).json({
       success: true,
       message: "Logged in successfully",

@@ -19,13 +19,10 @@ const Signup = ({ isSignUp }) => {
     const [showOtpInput, setShowOtpInput] = useState(false);
     const [otpLoading, setOtpLoading] = useState(false);
 
-    useEffect(()=>{
-    
-            setIsOtpSent(false);
-            setShowOtpInput(false);
-        
-           
-    },[isSignUp])
+    useEffect(() => {
+        setIsOtpSent(false);
+        setShowOtpInput(false);
+    }, []);
 
     const OTP_VERIFY_API = "http://localhost:5000/api/auth/verification";
 
@@ -37,15 +34,14 @@ const Signup = ({ isSignUp }) => {
         try {
             if (isSignUp) {
                 const response = await SignupService(formData.email, formData.name, formData.password);
+                setIsOtpSent(true);
+                setShowOtpInput(true);
                 Swal.fire("OTP SENT", "OTP has been sent to your email.", "success");
-               
             } else {
-                
                 const response = await LoginService(formData.email, formData.password);
-            
-                localStorage.setItem('token',response.token)
+                localStorage.setItem('token', response.token);
                 Swal.fire("Login Successful", "Welcome Back!", "success");
-                navigate("/dash"); // Redirect to dashboard
+                navigate("/dash");
             }
         } catch (error) {
             setError(error.response?.data?.message || (isSignUp ? "Signup failed" : "Login failed"));
@@ -54,7 +50,6 @@ const Signup = ({ isSignUp }) => {
         }
     };
 
-
     const handleOtpVerification = async () => {
         setOtpLoading(true);
         try {
@@ -62,10 +57,8 @@ const Signup = ({ isSignUp }) => {
                 email: formData.email,
                 code: otp
             });
-            
 
             Swal.fire("OTP Verified", "Your email has been successfully verified!", "success");
-
             setFormData({ email: "", name: "", password: "" });
             setOtp("");
             navigate("/login");
@@ -77,10 +70,6 @@ const Signup = ({ isSignUp }) => {
         }
     };
 
-
-
-
-
     return (
         <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
             <div className="container">
@@ -88,7 +77,6 @@ const Signup = ({ isSignUp }) => {
                     <div className="col-md-6 col-lg-4">
                         <div className="card shadow-lg border-0 rounded-lg">
                             <div className="card-body p-5">
-                                {/* Header */}
                                 <div className="text-center mb-4">
                                     <i className="fas fa-heartbeat fa-3x text-primary mb-3"></i>
                                     <h2 className="text-primary fw-bold">{isSignUp ? 'Sign Up' : 'Login'}</h2>
@@ -96,8 +84,6 @@ const Signup = ({ isSignUp }) => {
                                         {isSignUp ? 'Create your medical account' : 'Welcome back!'}
                                     </p>
                                 </div>
-
-                                {/* Form */}
                                 <form onSubmit={handleSubmit}>
                                     <div className="mb-4">
                                         <label className="form-label">
@@ -111,10 +97,9 @@ const Signup = ({ isSignUp }) => {
                                             value={formData.email}
                                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                             required
-                                            disabled={isOtpSent}
+                                            disabled={isOtpSent && isSignUp}
                                         />
                                     </div>
-
                                     {isSignUp && (
                                         <div className="mb-4">
                                             <label className="form-label">
@@ -132,7 +117,6 @@ const Signup = ({ isSignUp }) => {
                                             />
                                         </div>
                                     )}
-
                                     <div className="mb-4">
                                         <label className="form-label">
                                             <i className="fas fa-lock me-2 text-primary"></i>
@@ -146,12 +130,10 @@ const Signup = ({ isSignUp }) => {
                                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                             required
                                             autoComplete="off"
-                                            disabled={isOtpSent}
+                                            disabled={isOtpSent && isSignUp}
                                         />
-
                                     </div>
-
-                                    {showOtpInput && (
+                                    {(showOtpInput && isSignUp) && (
                                         <div className="mb-4">
                                             <label className="form-label">
                                                 <i className="fas fa-key me-2 text-primary"></i>
@@ -164,22 +146,21 @@ const Signup = ({ isSignUp }) => {
                                                 value={otp}
                                                 onChange={(e) => setOtp(e.target.value)}
                                                 required
-                                            
                                             />
                                         </div>
                                     )}
-
                                     {error && <p className="text-danger">{error}</p>}
-
-                                    {!showOtpInput && (
-                                        <button type="submit" className="btn btn-primary w-100 btn-lg mb-4" disabled={loading}>
+                                    {(!showOtpInput || !isSignUp) && (
+                                        <button
+                                            type="submit"
+                                            className="btn btn-primary w-100 btn-lg mb-4"
+                                            disabled={loading}
+                                        >
                                             <i className={isSignUp ? "fas fa-user-plus me-2" : "fas fa-sign-in-alt me-2"}></i>
                                             {loading ? "Processing..." : isSignUp ? "Sign Up" : "Login"}
-
                                         </button>
                                     )}
-
-                                    {showOtpInput && (
+                                    {(showOtpInput && isSignUp) && (
                                         <button
                                             type="button"
                                             className="btn btn-success w-100 btn-lg mb-4"
@@ -188,8 +169,11 @@ const Signup = ({ isSignUp }) => {
                                         >
                                             {otpLoading ? "Verifying..." : "Verify OTP"}
                                         </button>
-
-
+                                    )}
+                                    {(!showOtpInput && !isSignUp) && (
+                                        <div className='text-center'><a href="/forgot-password" className="text-primary text-decoration-none">
+                                            Forgot Password?
+                                        </a></div>
                                     )}
 
                                     <div className="text-center">
@@ -208,6 +192,6 @@ const Signup = ({ isSignUp }) => {
             </div>
         </div>
     );
-};
+}
 
 export default Signup;

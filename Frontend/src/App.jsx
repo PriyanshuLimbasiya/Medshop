@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Signup from "./components/Signup";
 import DashBoard from "./components/DashBoard";
 import PreLoader from "./components/utils/PreLoader";
+import ForgotPassword from "./components/ForgotPassword";
 function App() {
   const [loading, setLoading] = useState(true);
 
@@ -24,6 +25,7 @@ function App() {
         <Route path="/dash" element={<DashBoard />} />
         <Route path="/signup" element={<Signup isSignUp={true} />} />
         <Route path="/login" element={<Signup isSignUp={false} />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
     </Router>
   );
