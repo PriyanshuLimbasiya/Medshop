@@ -18,7 +18,14 @@ connectDB() // Connect to the database
     }));
     app.use(express.json());
 
-    app.use("/api/auth", userRoute, medicineRoute);
+    app.use("/api/auth", userRoute);
+const verifyToken = require("./middleware/verifyToken");
+
+// Public route (no authentication needed)
+app.use("/api/auth", userRoute);
+
+// Protected route (only accessible after login)
+app.use("/api/medicine", verifyToken, medicineRoute); 
 
     // Start the server
     app.listen(process.env.PORT || 5000, () => {
