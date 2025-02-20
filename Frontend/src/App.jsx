@@ -5,13 +5,14 @@ import Signup from "./components/Signup";
 import DashBoard from "./components/DashBoard";
 import PreLoader from "./components/utils/PreLoader";
 import ForgotPassword from "./components/ForgotPassword";
+import MedicineList from "./components/Medicine/MedicineList";
 function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 2000);
+    }, 990);
   }, []);
 
   if (loading) {
@@ -26,6 +27,7 @@ function App() {
         <Route path="/signup" element={<Signup isSignUp={true} />} />
         <Route path="/login" element={<Signup isSignUp={false} />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/medicinelist" element={<MedicineList />} />
       </Routes>
     </Router>
   );

@@ -10,21 +10,21 @@ const DashBoard = () => {
         const fetchUser = async () => {
             try {
                 const token = localStorage.getItem("token"); // Get token from localStorage
-               
+
                 if (!token) {
                     return navigate("/");
                 }
 
                 const response = await axios.get("http://localhost:5000/api/auth/check-auth", {
-                    headers: { Authorization: `Bearer ${token}` }, 
+                    headers: { Authorization: `Bearer ${token}` },
                 });
-            
-                
-                 setUserData(response.data.user);
+
+
+                setUserData(response.data.user);
             } catch (error) {
-                console.log("Error",error);
+                console.log("Error", error);
                 navigate("/")
-                
+
             }
         };
 
@@ -75,24 +75,15 @@ const DashBoard = () => {
                         >
                             <span className="navbar-toggler-icon"></span>
                         </button>
+                        <button onClick={() => {
+                            navigate('/medicinelist');
+                        }}>
+                            Medicine Detail
+                        </button>
 
                         {/* Collapsible Content */}
                         <div className={``}>
                             <div className="d-lg-flex align-items-center ms-auto">
-                                {/* Search Bar - Full width on mobile */}
-                                <div className="my-2 my-lg-0 mx-lg-2 flex-grow-1" style={{ maxWidth: '300px' }}>
-                                    <div className="input-group">
-                                        <span className="input-group-text bg-white border-end-0">
-                                            <i className="fas fa-search text-muted"></i>
-                                        </span>
-                                        <input
-                                            type="text"
-                                            className="form-control border-start-0"
-                                            placeholder="Search medicines..."
-                                        />
-                                    </div>
-                                </div>
-
                                 {/* New Sale Button */}
                                 <button className="btn btn-primary my-2 my-lg-0 w-100 w-lg-auto">
                                     <i className="fas fa-plus-circle me-2"></i>
@@ -100,7 +91,7 @@ const DashBoard = () => {
                                 </button>
 
                                 {/* User Dropdown */}
-                                <div className="dropdown ms-lg-2 mt-2 mt-lg-0">
+                                <div className="dropdown ms-lg-2 mt-2 mt-   lg-0">
                                     <button
                                         className="btn btn-outline-secondary dropdown-toggle w-100 w-lg-auto"
                                         type="button"

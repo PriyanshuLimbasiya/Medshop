@@ -3,21 +3,22 @@ const dotenv = require("dotenv");
 const connectDB = require("./db/connectDB");
 const userRoute = require("./routes/userRoute");
 const cookieParser = require("cookie-parser");
-const cors=require('cors');
+const cors = require('cors');
+const medicineRoute = require('./routes/medicineRoute')
 
 dotenv.config();
-  
+
 connectDB() // Connect to the database
   .then(() => {
     const app = express();
     app.use(cookieParser());
     app.use(cors({
-      credentials:true,
-      origin:"http://localhost:5173"
+      credentials: true,
+      origin: "http://localhost:5173"
     }));
     app.use(express.json());
-   
-    app.use("/api/auth", userRoute);
+
+    app.use("/api/auth", userRoute, medicineRoute);
 
     // Start the server
     app.listen(process.env.PORT || 5000, () => {
