@@ -35,7 +35,8 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/dash" element={<DashBoard />} />
           <Route path="/medicinelist" element={<MedicineList />} />
-          <Route path="/addmedicine" element={<InventoryForm />} />
+          <Route path="/addmedicine" element={<InventoryForm isEditMode={false} />} />
+          <Route path="/updatemed/:id" element={<InventoryForm isEditMode={true} />} />
         </Route>
       </Routes>
     </Router>

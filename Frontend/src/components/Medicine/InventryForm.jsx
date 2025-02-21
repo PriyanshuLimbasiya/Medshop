@@ -6,12 +6,12 @@ import Swal from "sweetalert2";
 const InventoryForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    medname: "", // ✅ Matches backend schema
+    medname: "", 
     category: "",
-    minStockLevel: "", // ✅ Correct field name
+    minStockLevel: "",
     price: "",
-    manufacturer: "", // ✅ Replaces "supplier"
-    batchNumber: "", // ✅ Matches schema
+    manufacturer: "", 
+    batchNumber: "", 
     quantity: "",
     expiryDate: "",
   });
@@ -27,15 +27,20 @@ const InventoryForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Make sure formData is passed to the addMedicine function correctly
       const response = await addMedicine(formData);
       console.log(response);
-
+  
+      // Success alert
       Swal.fire("Medicine Added", "Medicine has been added.", "success");
+  
+      // Redirect to medicine list
       navigate("/medicinelist");
     } catch (error) {
       console.error("Error:", error);
     }
   };
+  
 
   const handleReset = () => {
     setFormData({
