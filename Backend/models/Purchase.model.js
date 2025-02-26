@@ -8,7 +8,7 @@ const purchaseSchema = new mongoose.Schema({
     },
     items: [
         {
-            medname: {
+            medicinename: {
                 type: String,
                 required: true
             },

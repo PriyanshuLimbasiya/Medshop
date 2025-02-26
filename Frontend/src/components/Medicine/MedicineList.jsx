@@ -16,19 +16,21 @@ const MedicineList = () => {
     const [loading, setLoading] = useState(true);
     const values = [{ label: 'Total Medicine', value: medicines.length }]
     const categories = ['Antibiotic', 'Painkiller', 'Vitamin', 'Antiseptic', 'Other'];
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const data = await medicineList();
-                setMedicines(data);
-            } catch (error) {
-                console.error("Error fetching medicines:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchData();
-    }, [medicines]);
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const data = await medicineList();
+            setMedicines(data);
+        } catch (error) {
+            console.error("Error fetching medicines:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
 
 

@@ -20,24 +20,27 @@ const InventoryForm = ({ isEditMode }) => {
     expiryDate: "",
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (isEditMode) {
-          const response = await getMedicineById(id);
-          setFormData(response);
-          if (response.expiryDate) {
-            const formattedDate = new Date(response.expiryDate).toISOString().split('T')[0];
-            setFormData(prevData => ({
-              ...prevData,
-              expiryDate: formattedDate,
-            }));
-          }
+
+  const fetchData = async () => {
+    try {
+      if (isEditMode) {
+        const response = await getMedicineById(id);
+        setFormData(response);
+        if (response.expiryDate) {
+          const formattedDate = new Date(response.expiryDate).toISOString().split('T')[0];
+          setFormData(prevData => ({
+            ...prevData,
+            expiryDate: formattedDate,
+          }));
         }
-      } catch (error) {
-        console.error("Error fetching data:", error);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+
+  useEffect(() => {
     fetchData();
   }, [id, isEditMode]);
 

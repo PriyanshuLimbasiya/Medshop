@@ -1,11 +1,15 @@
-const purchase = require('../models/Purchase.model');
+const SupplierModel = require('../models/Supplier.model');
+const PurchaseModel = require('../models/Purchase.model');
 
 
 const getPurchase = async (req, res) => {
     try {
-        const purchases = await purchase.find();
+        const purchases = await PurchaseModel.find().populate("supplier", "name");
+
         res.json(purchases);
     } catch (error) {
+        console.log("error", error);
+
         res.status(500).json({ message: "Error fetching purchases", error });
     }
 };
