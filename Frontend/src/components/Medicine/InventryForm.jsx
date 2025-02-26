@@ -1,20 +1,43 @@
-import React, { useState } from "react";
-import { addMedicine } from "../services/MedicineService";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { addMedicine, getMedicineById, updateMed } from "../services/MedicineService";
+import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 
-const InventoryForm = () => {
+const InventoryForm = ({ isEditMode }) => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [formData, setFormData] = useState({
-    medname: "", 
+    medname: "",
     category: "",
     minStockLevel: "",
     price: "",
-    manufacturer: "", 
-    batchNumber: "", 
+    manufacturer: "",
+    batchNumber: "",
     quantity: "",
     expiryDate: "",
   });
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (isEditMode) {
+          const response = await getMedicineById(id);
+          setFormData(response);
+          if (response.expiryDate) {
+            const formattedDate = new Date(response.expiryDate).toISOString().split('T')[0];
+            setFormData(prevData => ({
+              ...prevData,
+              expiryDate: formattedDate,
+            }));
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,20 +50,23 @@ const InventoryForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Make sure formData is passed to the addMedicine function correctly
-      const response = await addMedicine(formData);
-      console.log(response);
-  
-      // Success alert
-      Swal.fire("Medicine Added", "Medicine has been added.", "success");
-  
-      // Redirect to medicine list
-      navigate("/medicinelist");
+
+      if (isEditMode) {
+        const response = await updateMed(id, formData);
+        Swal.fire("Medicine Update", "Medicine has been added.", "success");
+      }
+      else {
+        const response = await addMedicine(formData);
+        console.log(response);
+
+        Swal.fire("Medicine Added", "Medicine has been added.", "success");
+        navigate("/medicinelist");
+      }
     } catch (error) {
       console.error("Error:", error);
     }
   };
-  
+
 
   const handleReset = () => {
     setFormData({
@@ -139,7 +165,7 @@ const InventoryForm = () => {
               <div className="col-md-6">
                 <div className="mb-3">
                   <label htmlFor="manufacturer" className="form-label">
-                  Manufacturer
+                    Manufacturer
                   </label>
                   <input
                     id="manufacturer"

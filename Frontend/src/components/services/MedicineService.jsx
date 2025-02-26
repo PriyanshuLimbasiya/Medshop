@@ -60,11 +60,7 @@ export const deleteMed = async (id) => {
       },
     });
 
-    if (response.status === 200) {
-      console.log("Medicine deleted successfully:", response.data);
-    } else {
-      console.error("Failed to delet  e medicine", response);
-    }
+
   } catch (error) {
     console.error("Error Deleting Medicine", error.message);
     throw error;
@@ -94,3 +90,24 @@ export const updateMed = async (id, updatedData) => {
     throw error;
   }
 };
+
+export const getMedicineById = async (id) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      console.error("No token found. Please log in first.");
+      return;
+    }
+
+    const response = await axios.get(`${API}/getallmedicine/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("error", error);
+  }
+}

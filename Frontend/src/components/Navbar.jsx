@@ -54,7 +54,7 @@ const Navbar = () => {
         </button>
 
         <div className="d-lg-flex align-items-center ms-auto">
-           <div className="dropdown ms-lg-2 mt-2 mt-lg-0">
+          <div className="dropdown ms-lg-2 mt-2 mt-lg-0">
             <button
               className="btn btn-outline-secondary dropdown-toggle w-100 w-lg-auto"
               type="button"

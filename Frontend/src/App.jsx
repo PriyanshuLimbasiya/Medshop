@@ -25,13 +25,13 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Routes */}
+
         <Route path="/" element={<Signup isSignUp={false} />} />
         <Route path="/signup" element={<Signup isSignUp={true} />} />
         <Route path="/login" element={<Signup isSignUp={false} />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        {/* Protected Routes (Wrapped in Layout) */}
+
         <Route element={<Layout />}>
           <Route path="/dash" element={<DashBoard />} />
           <Route path="/medicinelist" element={<MedicineList />} />

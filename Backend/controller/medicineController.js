@@ -76,27 +76,47 @@ const deleteMedicine = async (req, res) => {
   }
 };
 
+
 const updateMedicine = async (req, res) => {
-    const { id } = req.params;
-    const updateFields = req.body; 
+  const { id } = req.params;
+  const updateFields = req.body;
 
-    try {
-        const medicine = await med.findByIdAndUpdate(id, updateFields, { new: true, runValidators: true });
-
-        if (!medicine) {
-            return res.status(404).json({ message: "Medicine not found" });
-        }
-
-        return res.status(200).json({ message: "Medicine details updated", medicine });
-    } catch (error) {
-        console.error("Error in updateMedicine:", error);
-        res.status(500).json({ error: "Server error" });
+  try {
+    if (Object.keys(updateFields).length === 0) {
+      return res.status(400).json({ message: "No update fields provided" });
     }
+
+    const medicine = await med.findByIdAndUpdate(id, updateFields, { new: true, runValidators: true });
+
+    if (!medicine) {
+      return res.status(404).json({ message: "Medicine not found" });
+    }
+
+    return res.status(200).json({ message: "Medicine details updated", medicine });
+  } catch (error) {
+    console.error("Error in updateMedicine:", error);
+    res.status(500).json({ error: "Server error" });
+  }
 };
+
+
+const getMedicineById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const medicines = await med.findById(id)
+    res.status(200).json(medicines);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+module.exports = updateMedicine;
+
 
 module.exports = {
   getAllMedicine,
   addMedicine,
   deleteMedicine,
   updateMedicine,
+  getMedicineById
 };
