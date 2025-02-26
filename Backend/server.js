@@ -2,13 +2,14 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./db/connectDB");
 const userRoute = require("./routes/userRoute");
+const purchaseRoute = require("./routes/purchaseRoute");
 const cookieParser = require("cookie-parser");
 const cors = require('cors');
 const medicineRoute = require('./routes/medicineRoute')
 
 dotenv.config();
 
-connectDB() // Connect to the database
+connectDB()
   .then(() => {
     const app = express();
     app.use(cookieParser());
@@ -19,13 +20,13 @@ connectDB() // Connect to the database
     app.use(express.json());
 
     app.use("/api/auth", userRoute);
-const verifyToken = require("./middleware/verifyToken");
+    const verifyToken = require("./middleware/verifyToken");
 
-// Public route (no authentication needed)
-app.use("/api/auth", userRoute);
 
-// Protected route (only accessible after login)
-app.use("/api/medicine", verifyToken, medicineRoute); 
+    app.use("/api/auth", userRoute);
+
+    app.use("/api/medicine", verifyToken, medicineRoute);
+    app.use("/api/purchase", verifyToken, purchaseRoute);
 
     // Start the server
     app.listen(process.env.PORT || 5000, () => {

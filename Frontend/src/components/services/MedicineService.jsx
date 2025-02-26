@@ -4,11 +4,11 @@ const API = "http://localhost:5000/api/medicine";
 
 export const medicineList = async () => {
   try {
-    const token = localStorage.getItem("token"); // Get token from storage
+    const token = localStorage.getItem("token");
 
     const response = await axios.get(`${API}/getallmedicine`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Send token in header
+        Authorization: `Bearer ${token}`,
       },
     });
 

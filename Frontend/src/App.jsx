@@ -8,6 +8,7 @@ import ForgotPassword from "./components/ForgotPassword";
 import MedicineList from "./components/Medicine/MedicineList";
 import InventoryForm from "./components/Medicine/InventryForm";
 import Layout from "./components/Layout"; // Import Layout
+import PurchaseList from "./components/Purchase/PurchaseList";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -37,6 +38,7 @@ function App() {
           <Route path="/medicinelist" element={<MedicineList />} />
           <Route path="/addmedicine" element={<InventoryForm isEditMode={false} />} />
           <Route path="/updatemed/:id" element={<InventoryForm isEditMode={true} />} />
+          <Route path="/purchase" element={<PurchaseList />} />
         </Route>
       </Routes>
     </Router>
