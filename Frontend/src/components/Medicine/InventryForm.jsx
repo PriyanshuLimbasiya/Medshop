@@ -6,6 +6,9 @@ import Swal from "sweetalert2";
 const InventoryForm = ({ isEditMode }) => {
   const navigate = useNavigate();
   const { id } = useParams();
+
+  const categories = ["Antibiotic", "Painkiller", "Vitamin", "Antiseptic", "Other"];
+
   const [formData, setFormData] = useState({
     medname: "",
     category: "",
@@ -16,7 +19,6 @@ const InventoryForm = ({ isEditMode }) => {
     quantity: "",
     expiryDate: "",
   });
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,11 +35,11 @@ const InventoryForm = ({ isEditMode }) => {
           }
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
     fetchData();
-  }, [id]);
+  }, [id, isEditMode]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,16 +52,12 @@ const InventoryForm = ({ isEditMode }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-
       if (isEditMode) {
-        const response = await updateMed(id, formData);
-        Swal.fire("Medicine Update", "Medicine has been added.", "success");
-      }
-      else {
-        const response = await addMedicine(formData);
-        console.log(response);
-
-        Swal.fire("Medicine Added", "Medicine has been added.", "success");
+        await updateMed(id, formData);
+        Swal.fire("Medicine Updated", "Medicine has been updated successfully.", "success");
+      } else {
+        await addMedicine(formData);
+        Swal.fire("Medicine Added", "Medicine has been added successfully.", "success");
         navigate("/medicinelist");
       }
     } catch (error) {
@@ -67,12 +65,10 @@ const InventoryForm = ({ isEditMode }) => {
     }
   };
 
-
   const handleReset = () => {
     setFormData({
       medname: "",
       category: "",
-      minStockLevel: "",
       price: "",
       manufacturer: "",
       batchNumber: "",
@@ -86,8 +82,7 @@ const InventoryForm = ({ isEditMode }) => {
       <div className="card">
         <div className="card-header">
           <h4>
-            <i className="fas fa-pills text-primary fa-lg"></i> Medicine
-            Inventory
+            <i className="fas fa-pills text-primary fa-lg"></i> Medicine Inventory
           </h4>
         </div>
         <div className="card-body">
@@ -95,9 +90,7 @@ const InventoryForm = ({ isEditMode }) => {
             <div className="row g-3">
               <div className="col-md-6">
                 <div className="mb-3">
-                  <label htmlFor="medname" className="form-label">
-                    Name
-                  </label>
+                  <label htmlFor="medname" className="form-label">Name</label>
                   <input
                     id="medname"
                     name="medname"
@@ -110,45 +103,28 @@ const InventoryForm = ({ isEditMode }) => {
                 </div>
               </div>
 
+              {/* ✅ Category Dropdown */}
               <div className="col-md-6">
                 <div className="mb-3">
-                  <label htmlFor="category" className="form-label">
-                    Category
-                  </label>
-                  <input
+                  <label htmlFor="category" className="form-label">Category</label>
+                  <select
                     id="category"
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Product category"
-                  />
+                    className="form-select"
+                  >
+                    <option value="" disabled>Select Category</option>
+                    {categories.map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
               <div className="col-md-6">
                 <div className="mb-3">
-                  <label htmlFor="minStockLevel" className="form-label">
-                    Stock
-                  </label>
-                  <input
-                    id="minStockLevel"
-                    name="minStockLevel"
-                    type="number"
-                    value={formData.minStockLevel}
-                    onChange={handleChange}
-                    className="form-control"
-                    placeholder="Minimum Stock Level"
-                  />
-                </div>
-              </div>
-
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label htmlFor="price" className="form-label">
-                    Price
-                  </label>
+                  <label htmlFor="price" className="form-label">Price</label>
                   <input
                     id="price"
                     name="price"
@@ -164,9 +140,7 @@ const InventoryForm = ({ isEditMode }) => {
 
               <div className="col-md-6">
                 <div className="mb-3">
-                  <label htmlFor="manufacturer" className="form-label">
-                    Manufacturer
-                  </label>
+                  <label htmlFor="manufacturer" className="form-label">Manufacturer</label>
                   <input
                     id="manufacturer"
                     name="manufacturer"
@@ -181,9 +155,7 @@ const InventoryForm = ({ isEditMode }) => {
 
               <div className="col-md-6">
                 <div className="mb-3">
-                  <label htmlFor="batchNumber" className="form-label">
-                    Batch
-                  </label>
+                  <label htmlFor="batchNumber" className="form-label">Batch</label>
                   <input
                     id="batchNumber"
                     name="batchNumber"
@@ -198,9 +170,7 @@ const InventoryForm = ({ isEditMode }) => {
 
               <div className="col-md-6">
                 <div className="mb-3">
-                  <label htmlFor="quantity" className="form-label">
-                    Quantity
-                  </label>
+                  <label htmlFor="quantity" className="form-label">Quantity</label>
                   <input
                     id="quantity"
                     name="quantity"
@@ -215,9 +185,7 @@ const InventoryForm = ({ isEditMode }) => {
 
               <div className="col-md-6">
                 <div className="mb-3">
-                  <label htmlFor="expiryDate" className="form-label">
-                    Expiry Date
-                  </label>
+                  <label htmlFor="expiryDate" className="form-label">Expiry Date</label>
                   <input
                     id="expiryDate"
                     name="expiryDate"

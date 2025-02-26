@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
 
 const MedicineList = () => {
     const navigate = useNavigate();
@@ -16,7 +15,7 @@ const MedicineList = () => {
     const [globalFilter, setGlobalFilter] = useState("");
     const [loading, setLoading] = useState(true);
     const values = [{ label: 'Total Medicine', value: medicines.length }]
-
+    const categories = ['Antibiotic', 'Painkiller', 'Vitamin', 'Antiseptic', 'Other'];
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -95,7 +94,6 @@ const MedicineList = () => {
                     >
                         <Column field="medname" header="Name" sortable></Column>
                         <Column field="category" header="Category" sortable></Column>
-                        <Column field="minStockLevel" header="Stock" sortable></Column>
                         <Column field="price" header="Price" sortable></Column>
                         <Column field="manufacturer" header="Manufacturer" sortable></Column>
                         <Column field="batchNumber" header="Batch" sortable></Column>

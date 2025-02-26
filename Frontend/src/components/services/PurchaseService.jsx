@@ -11,7 +11,6 @@ export const getallPurchase = async () => {
             console.error("No token found. Please log in first.");
             return;
         }
-
         const response = await axios.get(`${API}/getallpurchase`, {
             headers: {
                 Authorization: `Bearer ${token}`

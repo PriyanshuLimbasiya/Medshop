@@ -45,20 +45,24 @@ const Navbar = () => {
           <span className="fw-bold text-primary">MediCare Shop</span>
         </Link>
 
-        <button
-          className="btn btn-outline-primary d-flex align-items-center gap-2"
-          onClick={() => navigate("/medicinelist")}
-        >
-          <i className="fas fa-pills"></i>
-          Medicine Details
-        </button>
-        <button
-          className="btn btn-outline-primary d-flex align-items-center gap-2"
-          onClick={() => navigate("/purchase")}
-        >
-          <i className="fas fa-pills"></i>
-          Purchase Details
-        </button>
+        <div className="d-flex gap-3">
+          <button
+            className="btn btn-outline-primary d-flex align-items-center gap-2 px-3 py-2"
+            onClick={() => navigate("/medicinelist")}
+          >
+            <i className="fas fa-pills"></i>
+            <span>Medicine Details</span>
+          </button>
+
+          <button
+            className="btn btn-outline-primary d-flex align-items-center gap-2 px-3 py-2"
+            onClick={() => navigate("/purchase")}
+          >
+            <i className="fas fa-shopping-cart"></i>
+            <span>Purchase Details</span>
+          </button>
+        </div>
+
 
         <div className="d-lg-flex align-items-center ms-auto">
           <div className="dropdown ms-lg-2 mt-2 mt-lg-0">

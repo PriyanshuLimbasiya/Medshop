@@ -3,39 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 const DashBoard = () => {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState({ name: "" });
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const token = localStorage.getItem("token"); // Get token from localStorage
-
-        if (!token) {
-          return navigate("/");
-        }
-
-        const response = await axios.get(
-          "http://localhost:5000/api/auth/check-auth",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        setUserData(response.data.user);
-      } catch (error) {
-        console.log("Error", error);
-        navigate("/");
-      }
-    };
-
-    fetchUser();
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
-  };
 
   // Dashboard Stats Data
   const stats = [
@@ -114,9 +81,9 @@ const DashBoard = () => {
     <div className="container-fluid p-0">
       <div className="bg-light min-vh-100">
 
-        {/* Main Content with better padding on mobile */}
+        
         <div className="container-fluid px-3 px-lg-4 py-3 py-lg-4">
-          {/* Stats Cards - Stack on mobile */}
+          
           <div className="row g-3 mb-4">
             {stats.map((stat, index) => (
               <div key={index} className="col-12 col-sm-6 col-lg-3">
@@ -135,10 +102,9 @@ const DashBoard = () => {
             ))}
           </div>
 
-          {/* Rest of the code remains unchanged */}
-          {/* Main Content Grid */}
+      
           <div className="row g-3">
-            {/* Low Stock Table */}
+            
             <div className="col-12 col-xl-6">
               <div className="card border-0 shadow-sm">
                 <div className="card-body">
@@ -177,7 +143,7 @@ const DashBoard = () => {
               </div>
             </div>
 
-            {/* Recent Transactions */}
+            
             <div className="col-12 col-xl-6">
               <div className="card border-0 shadow-sm">
                 <div className="card-body">
@@ -209,29 +175,23 @@ const DashBoard = () => {
               </div>
             </div>
 
-            {/* Quick Actions */}
+         
             <div className="col-12">
               <div className="card border-0 shadow-sm">
                 <div className="card-body">
                   <h5 className="card-title mb-4">Quick Actions</h5>
                   <div className="row g-3">
-                    {/* Quick action buttons - 2 per row on mobile, 4 on desktop */}
+                   
                     <div className="col-6 col-md-3">
                       <button className="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
                         <i className="fas fa-plus-circle fa-2x mb-2 text-primary"></i>
-                        <span className="text-center">Add New Medicine</span>
+                        <span className="text-center">Purchase Medicine</span>
                       </button>
                     </div>
                     <div className="col-6 col-md-3">
                       <button className="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
                         <i className="fas fa-file-invoice fa-2x mb-2 text-primary"></i>
                         <span className="text-center">Generate Invoice</span>
-                      </button>
-                    </div>
-                    <div className="col-6 col-md-3">
-                      <button className="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
-                        <i className="fas fa-truck fa-2x mb-2 text-primary"></i>
-                        <span className="text-center">Place Order</span>
                       </button>
                     </div>
                     <div className="col-6 col-md-3">

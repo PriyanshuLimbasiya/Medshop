@@ -27,6 +27,7 @@ connectDB()
 
     app.use("/api/medicine", verifyToken, medicineRoute);
     app.use("/api/purchase", verifyToken, purchaseRoute);
+    
 
     // Start the server
     app.listen(process.env.PORT || 5000, () => {

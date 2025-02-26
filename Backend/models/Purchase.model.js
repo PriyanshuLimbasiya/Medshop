@@ -1,16 +1,15 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const purchaseSchema = new mongoose.Schema({
     supplier: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Supplier',
+        ref: "Supplier",
         required: true
     },
     items: [
         {
-            medicine: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Medicine',
+            medname: {
+                type: String,
                 required: true
             },
             quantity: {
@@ -41,11 +40,9 @@ const purchaseSchema = new mongoose.Schema({
         enum: ['Pending', 'Completed'],
         default: 'Pending'
     },
-    invoiceNumber: {
-        type: String,
-        unique: true,
-        required: true
-    }
-});
 
-module.exports = mongoose.model('Purchase', purchaseSchema);
+},
+    { timestamps: true });
+
+
+module.exports = mongoose.model("Purchase", purchaseSchema);;
