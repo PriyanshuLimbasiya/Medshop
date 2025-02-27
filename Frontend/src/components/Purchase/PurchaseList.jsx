@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
+import {useNavigate} from "react-router-dom"
 import { getallPurchase } from "../services/PurchaseService";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { ProgressSpinner } from "primereact/progressspinner";
-import { InputText } from "primereact/inputtext";
 import { confirmDialog } from "primereact/confirmdialog";
 import "primereact/resources/themes/lara-light-blue/theme.css";
 import "primereact/resources/primereact.min.css";
@@ -13,10 +12,12 @@ import "primeicons/primeicons.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const PurchaseList = () => {
+    const navigate=useNavigate();
     const [purchases, setPurchases] = useState([]);
     const [loading, setLoading] = useState(true);
     const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef(null);
+
 
     const fetchData = async () => {
         setLoading(true);
@@ -25,7 +26,7 @@ const PurchaseList = () => {
             const formattedPurchases = response.flatMap((purchaseItem) =>
                 purchaseItem.items.map((item) => ({
                     id: purchaseItem._id,
-                    purchaseId: purchaseItem._id, // Keep original ID for reference
+                    purchaseId: purchaseItem._id,
                     supplier: purchaseItem.supplier?.name || "Unknown",
                     medname: item.medname,
                     quantity: item.quantity,
@@ -49,11 +50,6 @@ const PurchaseList = () => {
         fetchData();
     }, []);
 
-    const handleEdit = (rowData) => {
-        // Implement navigation to edit page with ID
-        console.log("Edit purchase:", rowData);
-        // Example: navigate(`/purchases/edit/${rowData.purchaseId}`);
-    };
 
     const handleDelete = (rowData) => {
         confirmDialog({
@@ -79,11 +75,7 @@ const PurchaseList = () => {
         }
     };
 
-    const handleAddPurchase = () => {
-        // Navigate to create page
-        console.log("Add Purchase Clicked");
-        // Example: navigate('/purchases/create');
-    };
+
 
     const formatCurrency = (value) => {
         return `₹${parseFloat(value).toFixed(2)}`;
@@ -96,15 +88,19 @@ const PurchaseList = () => {
     const header = (
         <div className="d-flex justify-content-between align-items-center">
             <h5 className="m-0">Purchases</h5>
-            <span className="p-input-icon-left">
-                <i className="pi pi-search" />
-                <InputText
+            <div className="input-group">
+                <span className="input-group-text">
+                    <i className="fas fa-search"></i>
+                </span>
+                <input
                     type="search"
+                    className="form-control form-control-sm"
                     placeholder="Search..."
                     onInput={(e) => setGlobalFilter(e.target.value)}
                 />
-            </span>
+            </div>
         </div>
+
     );
 
     if (loading) {
@@ -122,12 +118,18 @@ const PurchaseList = () => {
             <div className="card">
                 <div className="card-header d-flex justify-content-between align-items-center">
                     <h4>Purchase List</h4>
-                    <Button
-                        label="Add Purchase"
-                        icon="pi pi-plus"
-                        className="p-button-success"
-                        onClick={handleAddPurchase}
-                    />
+                    <button
+                        className="btn btn-success"
+                        onClick={() => {
+                            navigate("/purchaseform");
+                        }}
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                        title="Add Purchase"
+                    >
+                        <i className="fas fa-plus"></i> Add Purchase
+                    </button>
+
                 </div>
                 <div className="card-body">
                     <DataTable
@@ -141,33 +143,41 @@ const PurchaseList = () => {
                         responsiveLayout="scroll"
                         className="p-datatable-sm"
                         stripedRows
+                        removableSort
                     >
-                        <Column field="supplier" header="Supplier" sortable filter filterPlaceholder="Search by supplier" />
-                        <Column field="medname" header="Medicine Name" sortable filter filterPlaceholder="Search by medicine" />
-                        <Column field="quantity" header="Quantity" sortable />
-                        <Column field="pricePerUnit" header="Price Per Unit" body={(rowData) => priceTemplate(rowData, 'pricePerUnit')} sortable />
-                        <Column field="totalPrice" header="Total Price" body={(rowData) => priceTemplate(rowData, 'totalPrice')} sortable />
-                        <Column field="totalAmount" header="Total Amount" body={(rowData) => priceTemplate(rowData, 'totalAmount')} sortable />
-                        <Column field="purchaseDate" header="Purchase Date" sortable />
+                        <Column field="supplier" header="Supplier" sortable />
+                        <Column field="medname" header="Medicine Name" sortable />
+                        <Column field="quantity" header="Quantity" />
+                        <Column field="pricePerUnit" header="Price Per Unit" body={(rowData) => priceTemplate(rowData, 'pricePerUnit')} />
+                        <Column field="totalPrice" header="Total Price" body={(rowData) => priceTemplate(rowData, 'totalPrice')} />
+                        <Column field="totalAmount" header="Total Amount" body={(rowData) => priceTemplate(rowData, 'totalAmount')} />
+                        <Column field="purchaseDate" header="Purchase Date" />
                         <Column
                             header="Actions"
                             body={(rowData) => (
                                 <div className="d-flex gap-2">
-                                    <Button
-                                        icon="pi pi-pencil"
-                                        className="p-button-warning p-button-sm"
-                                        onClick={() => handleEdit(rowData)}
-                                        tooltip="Edit"
-                                        tooltipOptions={{ position: 'top' }}
-                                    />
-                                    <Button
-                                        icon="pi pi-trash"
-                                        className="p-button-danger p-button-sm"
+                                    <button
+                                        className="btn btn-warning btn-sm"
+                                        onClick={() => {        
+                                            navigate(`/editpurchaseform/${rowData.id}`)
+                                        }}
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        title="Edit"
+                                    >
+                                        <i className="fas fa-pencil-alt"></i>
+                                    </button>
+                                    <button
+                                        className="btn btn-danger btn-sm"
                                         onClick={() => handleDelete(rowData)}
-                                        tooltip="Delete"
-                                        tooltipOptions={{ position: 'top' }}
-                                    />
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        title="Delete"
+                                    >
+                                        <i className="fas fa-trash"></i>
+                                    </button>
                                 </div>
+
                             )}
                         />
                     </DataTable>

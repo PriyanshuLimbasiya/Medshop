@@ -45,4 +45,4 @@ const purchaseSchema = new mongoose.Schema({
     { timestamps: true });
 
 
-module.exports = mongoose.model("Purchase", purchaseSchema);;
+module.exports = mongoose.model("Purchase", purchaseSchema);
