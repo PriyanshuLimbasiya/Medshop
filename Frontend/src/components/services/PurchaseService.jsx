@@ -68,3 +68,51 @@ export const deletePurchaseByID = async (id) => {
 
     }
 }
+
+export const updatePurchase = async (id, purchasedata) => {
+    try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            console.error("No token found. Please log in first.");
+            return;
+        }
+
+        const response = await axios.patch(`${API}/editpurchase/${id}`, purchasedata, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        return response.data;
+    }
+    catch (error) {
+        console.error("Error in Purchase Editing", error);
+
+    }
+}
+
+export const getPurchaseByID = async (id) => {
+    try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            console.error("No token found. Please log in first.");
+            return;
+        }
+
+        const response = await axios.get(`${API}/getallpurchase/${id}`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        return response.data;
+    }
+    catch (error) {
+        console.error("Error in Purchase Data Getting", error);
+
+    }
+}

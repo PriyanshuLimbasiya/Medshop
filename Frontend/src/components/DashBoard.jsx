@@ -1,10 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { medicineList } from "./services/MedicineService";
+import { getAllSupplier } from "./services/SupplierService";
+import { useNavigate } from "react-router-dom";
 
 const DashBoard = () => {
+  const navigate = useNavigate();
+  const [length, setLength] = useState({
+    medicineLength: 0,
+    supplierLength: 0
+  });
+  const [lowstocks, setLowStocks] = useState([]);
+
+
+  const fetchSupplier = async () => {
+    const supplier = await getAllSupplier();
+    setLength(prev => ({ ...prev, supplierLength: supplier.length }))
+  }
+  const fetchInventory = async () => {
+    const medicine = await medicineList()
+    setLength(prev => ({ ...prev, medicineLength: medicine.length }))
+
+    setLowStocks(medicine.filter(m => m.quantity <= 20))
+
+  }
+  useEffect(() => {
+    fetchInventory();
+    fetchSupplier();
+  }, [])
   const stats = [
     {
       title: "Total Inventory",
-      value: "2,543",
+      value: length.medicineLength,
       icon: "fas fa-pills",
       bgColor: "bg-primary text-white",
     },
@@ -22,30 +48,9 @@ const DashBoard = () => {
     },
     {
       title: "Suppliers",
-      value: "24",
+      value: length.supplierLength,
       icon: "fas fa-truck",
       bgColor: "bg-info text-white",
-    },
-  ];
-
-  const lowStockMedicines = [
-    {
-      name: "Paracetamol 500mg",
-      stock: 20,
-      reorderPoint: 50,
-      supplier: "ABC Pharma",
-    },
-    {
-      name: "Amoxicillin 250mg",
-      stock: 15,
-      reorderPoint: 40,
-      supplier: "XYZ Medical",
-    },
-    {
-      name: "Omeprazole 20mg",
-      stock: 10,
-      reorderPoint: 30,
-      supplier: "MedSupply Inc",
     },
   ];
 
@@ -77,9 +82,9 @@ const DashBoard = () => {
     <div className="container-fluid p-0">
       <div className="bg-light min-vh-100">
 
-        
+
         <div className="container-fluid px-3 px-lg-4 py-3 py-lg-4">
-          
+
           <div className="row g-3 mb-4">
             {stats.map((stat, index) => (
               <div key={index} className="col-12 col-sm-6 col-lg-3">
@@ -98,9 +103,9 @@ const DashBoard = () => {
             ))}
           </div>
 
-      
+
           <div className="row g-3">
-            
+
             <div className="col-12 col-xl-6">
               <div className="card border-0 shadow-sm">
                 <div className="card-body">
@@ -112,24 +117,24 @@ const DashBoard = () => {
                           <th>Medicine</th>
                           <th>Current Stock</th>
                           <th>Reorder Point</th>
-                          <th>Action</th>
+                          {/* <th>Action</th> */}
                         </tr>
                       </thead>
                       <tbody>
-                        {lowStockMedicines.map((med, index) => (
+                        {lowstocks.map((med, index) => (
                           <tr key={index}>
-                            <td className="fw-medium">{med.name}</td>
+                            <td className="fw-medium">{med.medname}</td>
                             <td>
                               <span className="badge bg-danger">
-                                {med.stock} units
+                                {med.quantity} units
                               </span>
                             </td>
-                            <td>{med.reorderPoint} units</td>
-                            <td>
-                              <button className="btn btn-outline-primary btn-sm">
+                            <td>50 units</td>
+                            {/* <td>
+                              <button onClick={() => navigate("/addmedicine")} className="btn btn-outline-primary btn-sm">
                                 Order Now
                               </button>
-                            </td>
+                            </td> */}
                           </tr>
                         ))}
                       </tbody>
@@ -139,7 +144,7 @@ const DashBoard = () => {
               </div>
             </div>
 
-            
+
             <div className="col-12 col-xl-6">
               <div className="card border-0 shadow-sm">
                 <div className="card-body">
@@ -171,15 +176,17 @@ const DashBoard = () => {
               </div>
             </div>
 
-         
+
             <div className="col-12">
               <div className="card border-0 shadow-sm">
                 <div className="card-body">
                   <h5 className="card-title mb-4">Quick Actions</h5>
                   <div className="row g-3">
-                   
+
                     <div className="col-6 col-md-3">
-                      <button className="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                      <button className="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center" onClick={() => {
+                        navigate("/purchaseform")
+                      }}>
                         <i className="fas fa-plus-circle fa-2x mb-2 text-primary"></i>
                         <span className="text-center">Purchase Medicine</span>
                       </button>

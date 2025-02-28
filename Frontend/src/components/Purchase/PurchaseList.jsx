@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { deletePurchaseByID, getallPurchase } from "../services/PurchaseService";
+import { deletePurchaseByID, getallPurchase, updatePurchase } from "../services/PurchaseService";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
@@ -17,7 +17,7 @@ const PurchaseList = () => {
     const [loading, setLoading] = useState(true);
     const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef(null);
-
+    const status = ['Pending', 'Completed']
     const fetchData = async () => {
         setLoading(true);
         try {
@@ -32,6 +32,7 @@ const PurchaseList = () => {
                     totalPrice: item.totalPrice,
                     totalAmount: purchaseItem.totalAmount,
                     purchaseDate: new Date(purchaseItem.purchaseDate).toLocaleDateString(),
+                    paymentStatus: purchaseItem.paymentStatus
                 }))
             );
             setPurchases(formattedPurchases);
@@ -58,6 +59,43 @@ const PurchaseList = () => {
             setLoading(false);
         }
     };
+
+    const handleSubmit = async (e, id, updatedStatus) => {
+        e.preventDefault();
+        try {
+            const updatedData = { paymentStatus: updatedStatus };
+            await updatePurchase(id, updatedData);
+            fetchData(); // Refresh the purchase list
+            if (toast.current) {
+                toast.current.show({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Payment Status Updated Successfully',
+                    life: 3000
+                });
+            }
+        } catch (error) {
+            console.error("Error In Payment Status Updating", error);
+            if (toast.current) {
+                toast.current.show({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Failed to Update Payment Status',
+                    life: 3000
+                });
+            }
+        }
+    };
+
+    const handleChange = (e, id) => {
+        const { value } = e.target;
+        setPurchases((prevPurchases) =>
+            prevPurchases.map((purchase) =>
+                purchase.id === id ? { ...purchase, paymentStatus: value } : purchase
+            )
+        );
+    };
+
 
     useEffect(() => {
         fetchData();
@@ -95,7 +133,7 @@ const PurchaseList = () => {
                     summary: 'Error',
                     detail: 'Failed to delete purchase',
                     life: 3000
-                }); 
+                });
             }
         }
     };
@@ -107,6 +145,9 @@ const PurchaseList = () => {
     const priceTemplate = (rowData, field) => {
         return formatCurrency(rowData[field]);
     };
+
+
+
 
     const header = (
         <div className="d-flex justify-content-between align-items-center">
@@ -200,6 +241,31 @@ const PurchaseList = () => {
                                 </div>
                             )}
                         />
+                        <Column
+                            header="Payment Status"
+                            body={(rowData) => (
+                                <form onSubmit={(e) => handleSubmit(e, rowData.id, rowData.paymentStatus)}>
+                                    <div className="mb-3">
+                                        <label className="form-label fw-semibold">Payment Status</label>
+                                        <select
+                                            name="paymentStatus"
+                                            className="form-select form-control shadow-sm"
+                                            value={rowData.paymentStatus}
+                                            onChange={(e) => handleChange(e, rowData.id)}
+                                            required
+                                            aria-label="Select Payment Status"
+                                        >
+                                            <option value="" disabled>Select Payment Status</option>
+                                            {status.map((statusValue) => (
+                                                <option key={statusValue} value={statusValue}>{statusValue}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <button type="submit" className="btn btn-primary btn-sm">Update</button>
+                                </form>
+                            )}
+                        />
+
                     </DataTable>
                 </div>
             </div>

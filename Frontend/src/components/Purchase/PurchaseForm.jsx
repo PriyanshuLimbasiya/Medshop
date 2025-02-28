@@ -2,24 +2,24 @@ import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './purchaseform.css';
 import { getAllSupplier } from '../services/SupplierService';
-import { addPurchase } from '../services/PurchaseService';
-import { useNavigate } from 'react-router-dom';
+import { addPurchase, getPurchaseByID, updatePurchase } from '../services/PurchaseService';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const PurchaseForm = ({ isPurchaseEdit }) => {
-  const navigate=useNavigate();
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [purchase, setPurchase] = useState({
-    supplier:"",
+    supplier: "",
     items: [{ medicinename: '', quantity: 0, pricePerUnit: 0, totalPrice: 0 }],
     totalAmount: 0,
     purchaseDate: new Date().toISOString().split('T')[0],
     paymentStatus: "Pending",
   });
 
+
   const [suppliers, setSuppliers] = useState([]);
 
-  useEffect(() => {
-    fetchSuppliers();
-  }, []);
+
 
   const fetchSuppliers = async () => {
     try {
@@ -47,22 +47,52 @@ const PurchaseForm = ({ isPurchaseEdit }) => {
   };
 
   const handleChange = (e) => {
-    
+
     const { name, value } = e.target;
     setPurchase({ ...purchase, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {      
-      await addPurchase(purchase); 
-      alert("Purchase Added Successfully!");
-      navigate("/purchase"); 
+    try {
+      if (isPurchaseEdit) {
+        await updatePurchase(id, purchase)
+        alert("Purchase Data Has been Changed")
+        navigate("/purchase");
+      }
+      else {
+        await addPurchase(purchase);
+        alert("Purchase Added Successfully!");
+        navigate("/purchase");
+      }
     } catch (error) {
       console.error("Error adding purchase:", error);
       alert("Failed to add purchase. Please try again.");
     }
   };
+
+  const fetchData = async () => {
+    try {
+      if (isPurchaseEdit) {
+        const response = await getPurchaseByID(id);
+        setPurchase(response)
+        if (response.purchaseDate) {
+          const formattedDate = new Date(response.purchaseDate).toISOString().split('T')[0];
+          setPurchase(prevData => ({
+            ...prevData,
+            purchaseDate: formattedDate,
+          }));
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching purchase data:", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+    fetchSuppliers();
+  }, []);
 
   return (
     <div className="container py-4">
@@ -94,19 +124,19 @@ const PurchaseForm = ({ isPurchaseEdit }) => {
               <span className="form-control bg-light">{item.totalPrice}</span>
             </div>
             <div className="col-md-1">
-            <label className="form-label">Action</label>
+              <label className="form-label">Action</label>
               <button type="button" className="btn btn-danger" onClick={() => removeItem(index)} disabled={purchase.items.length === 1}>Remove</button>
             </div>
           </div>
         ))}
 
         <button type="button" className="btn btn-primary mb-3" onClick={addItem}>Add Item</button>
-        
+
         <div className="mb-3">
           <label className="form-label">Purchase Date</label>
           <input type="date" name="purchaseDate" className="form-control" value={purchase.purchaseDate} onChange={handleChange} required />
         </div>
-        
+
         <div className="mb-3">
           <label className="form-label">Payment Status</label>
           <select name="paymentStatus" className="form-select" value={purchase.paymentStatus} onChange={handleChange} required>
@@ -114,11 +144,11 @@ const PurchaseForm = ({ isPurchaseEdit }) => {
             <option value="Completed">Completed</option>
           </select>
         </div>
-        
+
         <p className="fw-bold">Total Amount: {purchase.totalAmount}</p>
-        <button type="submit" onClick={()=>{
-          
-          
+        <button type="submit" onClick={() => {
+
+
         }} className="btn btn-success">{isPurchaseEdit ? 'Update' : 'Create'} Purchase</button>
       </form>
     </div>
