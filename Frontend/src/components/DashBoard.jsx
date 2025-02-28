@@ -1,10 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-const DashBoard = () => {
-  const navigate = useNavigate();
+import React from "react";
 
-  // Dashboard Stats Data
+const DashBoard = () => {
   const stats = [
     {
       title: "Total Inventory",

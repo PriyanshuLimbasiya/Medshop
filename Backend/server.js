@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./db/connectDB");
 const userRoute = require("./routes/userRoute");
 const purchaseRoute = require("./routes/purchaseRoute");
+const supplierRoute=require("./routes/supplierRoute");
 const cookieParser = require("cookie-parser");
 const cors = require('cors');
 const medicineRoute = require('./routes/medicineRoute')
@@ -27,6 +28,7 @@ connectDB()
 
     app.use("/api/medicine", verifyToken, medicineRoute);
     app.use("/api/purchase", verifyToken, purchaseRoute);
+    app.use("/api/supplier", verifyToken,supplierRoute);
 
     app.listen(process.env.PORT || 5000, () => {
       console.log("🚀 Server running");

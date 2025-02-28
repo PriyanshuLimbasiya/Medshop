@@ -37,12 +37,23 @@ const addPurchase=async (req,res) => {
         res.status(200).json(result)
     } catch (error) {
         console.error("Purchase Adding Error",error);
-        
+    }
+}
+
+const deletePurchase=async (req,res) => {
+    const {id}=req.params;
+    try {
+        const purchase=await PurchaseModel.findByIdAndDelete(id);
+        res.status(200).json({ message: "Purchase Has Been Deleted", purchase })
+    } catch (error) {
+        console.error("Error deleting Purchase:", error);
+        return res.status(500).json({ message: "Server error" });
     }
 }
 
 module.exports = {
     getPurchase,
     getPurchasebyID,
-    addPurchase
+    addPurchase,
+    deletePurchase
 }
