@@ -55,7 +55,7 @@ const InventoryForm = ({ isEditMode }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (isEditMode) {
+      if (isEditMode) {c
         await updateMed(id, formData);
         Swal.fire("Medicine Updated", "Medicine has been updated successfully.", "success");
       } else {

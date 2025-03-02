@@ -1,8 +1,9 @@
+const PurchaseModel=require("../models/Purchase.model")
 const SalesModel = require('../models/Sales.model');
 
 const getSales = async (req, res) => {
     try {
-        const sales = await SalesModel.find().lean();
+        const sales = await SalesModel.find().populate("purchase","medicinename")
         if (!sales.length) {
             return res.status(404).json({ message: "No sales found" });
         }
