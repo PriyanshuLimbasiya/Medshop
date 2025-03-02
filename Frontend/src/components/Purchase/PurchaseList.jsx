@@ -65,7 +65,7 @@ const PurchaseList = () => {
         try {
             const updatedData = { paymentStatus: updatedStatus };
             await updatePurchase(id, updatedData);
-            fetchData(); // Refresh the purchase list
+            fetchData();
             if (toast.current) {
                 toast.current.show({
                     severity: 'success',

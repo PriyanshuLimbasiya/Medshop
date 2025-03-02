@@ -61,6 +61,13 @@ const Navbar = () => {
             <i className="fas fa-shopping-cart"></i>
             <span>Purchase Details</span>
           </button>
+          <button
+            className="btn btn-outline-primary d-flex align-items-center gap-2 px-3 py-2"
+            onClick={() => navigate("/saleslist")}
+          >
+            <i className="fas fa-shopping-cart"></i>
+            <span>Sales </span>
+          </button>
         </div>
 
 

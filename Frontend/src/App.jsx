@@ -10,6 +10,7 @@ import InventoryForm from "./components/Medicine/InventryForm";
 import Layout from "./components/Layout"; // Import Layout
 import PurchaseList from "./components/Purchase/PurchaseList";
 import PurchaseForm from "./components/Purchase/PurchaseForm";
+import SalesList from "./components/Sales/SalesList";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -40,8 +41,9 @@ function App() {
           <Route path="/addmedicine" element={<InventoryForm isEditMode={false} />} />
           <Route path="/updatemed/:id" element={<InventoryForm isEditMode={true} />} />
           <Route path="/purchase" element={<PurchaseList />} />
-          <Route path="/purchaseform" element={<PurchaseForm isPurchaseEdit={false}/>} />
+          <Route path="/purchaseform" element={<PurchaseForm isPurchaseEdit={false} />} />
           <Route path="/editpurchaseform/:id" element={<PurchaseForm isPurchaseEdit={true} />} />
+          <Route path="/saleslist" element={<SalesList />} />
         </Route>
       </Routes>
     </Router>
