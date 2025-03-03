@@ -7,7 +7,7 @@ import PreLoader from "./components/utils/PreLoader";
 import ForgotPassword from "./components/ForgotPassword";
 import MedicineList from "./components/Medicine/MedicineList";
 import InventoryForm from "./components/Medicine/InventryForm";
-import Layout from "./components/Layout"; // Import Layout
+import Layout from "./components/Layout";
 import PurchaseList from "./components/Purchase/PurchaseList";
 import PurchaseForm from "./components/Purchase/PurchaseForm";
 import SalesList from "./components/Sales/SalesList";

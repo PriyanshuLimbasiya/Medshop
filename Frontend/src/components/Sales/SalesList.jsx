@@ -1,22 +1,22 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { DataTable } from "primereact/datatable";
 import { deleteSalesByID, getAllSales } from "../services/SalesService";
 import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import "primereact/resources/themes/lara-light-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-
 const SalesList = () => {
     const navigate = useNavigate();
     const [sales, setSales] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef(null);
 
     const fetchData = async () => {
@@ -24,6 +24,8 @@ const SalesList = () => {
         try {
             const response = await getAllSales();
             setSales(response);
+            console.log(response);
+
             toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Sales loaded successfully', life: 3000 });
         } catch (error) {
             console.error("Sales Error", error);
@@ -62,22 +64,24 @@ const SalesList = () => {
 
     const priceTemplate = (rowData, field) => formatCurrency(rowData[field]);
 
-    const header = (
-        <div className="d-flex justify-content-between align-items-center">
-            <h5 className="m-0">Sales</h5>
-            <div className="input-group">
-                <span className="input-group-text">
-                    <i className="fas fa-search"></i>
-                </span>
-                <input
-                    type="search"
-                    className="form-control form-control-sm"
-                    placeholder="Search..."
-                    onInput={(e) => setGlobalFilter(e.target.value)}
-                />
-            </div>
-        </div>
-    );
+    const generatePDF = () => {
+        const doc = new jsPDF();
+        doc.text("Sales Report", 14, 10);
+
+        autoTable(doc, {
+            startY: 20,
+            head: [["Customer Name", "Invoice", "Total Amount", "Sale Date", "Payment Method"]],
+            body: sales.map((sale) => [
+                sale.customerName,
+                sale.invoiceNumber,
+                formatCurrency(sale.totalAmount),
+                sale.saleDate,
+                sale.paymentMethod,
+            ]),
+        });
+
+        doc.save("Sales_Report.pdf");
+    };
 
     if (loading) {
         return (
@@ -94,12 +98,14 @@ const SalesList = () => {
             <div className="card">
                 <div className="card-header d-flex justify-content-between align-items-center">
                     <h4>Sales List</h4>
-                    <button
-                        className="btn btn-success"
-                        onClick={() => navigate("/salesform")}
-                    >
-                        <i className="fas fa-plus"></i> Add Sale
-                    </button>
+                    <div className="d-flex gap-2">
+                        <button className="btn btn-success" onClick={() => navigate("/salesform")}>
+                            <i className="fas fa-plus"></i> Add Sale
+                        </button>
+                        <button className="btn btn-primary" onClick={generatePDF}>
+                            <i className="fas fa-file-pdf"></i> Download PDF
+                        </button>
+                    </div>
                 </div>
                 <div className="card-body">
                     <DataTable
@@ -107,8 +113,6 @@ const SalesList = () => {
                         paginator
                         rows={10}
                         rowsPerPageOptions={[5, 10, 25]}
-                        globalFilter={globalFilter}
-                        header={header}
                         emptyMessage="No sales found"
                         responsiveLayout="scroll"
                         className="p-datatable-sm"
@@ -116,25 +120,33 @@ const SalesList = () => {
                         removableSort
                     >
                         <Column field="customerName" header="Customer Name" sortable />
-                        <Column field="customerPhone" header="Phone Number" sortable />
+                        <Column
+                            header="Medicine"
+                            body={(rowData) => (
+                                <ul>
+                                    {rowData.items.map((item, index) => (
+                                        <li key={index}>{`${index + 1}. ${item.medicine}`}</li>
+                                    ))}
+                                </ul>
+                            )}
+                        />
+                        <Column field="customerPhone" header="Phone Number" />
                         <Column field="invoiceNumber" header="Invoice" sortable />
                         <Column field="totalAmount" header="Total Amount" body={(rowData) => priceTemplate(rowData, 'totalAmount')} />
-                        <Column field="saleDate" header="Sale Date" sortable />
-                        <Column field="paymentMethod" header="Payment Method" sortable />
+                        <Column field="saleDate" header="Sale Date" />
+                        <Column field="paymentMethod" header="Payment Method" />
                         <Column
                             header="Actions"
                             body={(rowData) => (
                                 <div className="d-flex gap-2">
-                                    <button
-                                        className="btn btn-warning btn-sm"
-                                        onClick={() => navigate(`/editsalesform/${rowData.id}`)}
-                                    >
+                                    <button className="btn btn-warning btn-sm" onClick={() => navigate(`/editsalesform/${rowData._id}`)}>
                                         <i className="fas fa-pencil-alt"></i>
                                     </button>
-                                    <button
-                                        className="btn btn-danger btn-sm"
-                                        onClick={() => handleDelete(rowData.id)}
-                                    >
+                                    <button className="btn btn-danger btn-sm" onClick={() => {
+                                        console.log(rowData._id);
+
+                                        handleDelete(rowData._id)
+                                    }}>
                                         <i className="fas fa-trash"></i>
                                     </button>
                                 </div>

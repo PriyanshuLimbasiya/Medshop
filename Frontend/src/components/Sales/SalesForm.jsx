@@ -1,192 +1,174 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getallPurchase } from '../services/PurchaseService';
-
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useNavigate, useParams } from 'react-router-dom'
+import { getallPurchase } from '../services/PurchaseService';
 import { addSales, getSalesByID, updateSales } from '../services/SalesService';
 
-const SalesForm = ({ isEdit }) => {
+const SalesForm = ({ isSalesEdit }) => {
     const { id } = useParams();
     const navigate = useNavigate();
-    
-    const [sales, setSales] = useState({
+
+    const generateInvoiceNumber = () => {
+        const date = new Date().toISOString().split('T')[0].replace(/-/g, '');
+        const random = Math.floor(1000 + Math.random() * 9000); // 4-digit random number
+        return `INV-${date}-${random}`;
+    };
+
+    const [sale, setSale] = useState({
         customerName: '',
         customerPhone: '',
-        items: [],
+        items: [{ medicine: '', quantity: 1, pricePerUnit: 0, totalPrice: 0 }],
         totalAmount: 0,
         saleDate: new Date().toISOString().split('T')[0],
         paymentMethod: 'Cash',
-        invoiceNumber: generateInvoiceNumber(), // Auto-generate invoice number
+        invoiceNumber: generateInvoiceNumber(),
     });
 
-    const [purchases, setPurchases] = useState([]);
+    const [medicines, setMedicines] = useState([]);
 
-    // Function to generate a random invoice number
-    function generateInvoiceNumber() {
-        return 'INV-' + Math.floor(100000 + Math.random() * 900000);
-    }
+    useEffect(() => {
+        fetchMedicines();
+        if (isSalesEdit) fetchSaleData();
+    }, []);
 
-    // Fetch available medicines
-    const fetchPurchases = async () => {
+    const fetchMedicines = async () => {
         try {
             const response = await getallPurchase();
-            setPurchases(response);
+            const allMedicines = response.flatMap(purchase =>
+                purchase.items.map(item => ({
+                    name: item.medicinename,
+                    pricePerUnit: item.pricePerUnit
+                }))
+            );
+
+            console.log(allMedicines);
+
+            setMedicines(allMedicines);
         } catch (error) {
-            console.error('Error fetching purchases:', error);
+            console.error('Error fetching medicines:', error);
         }
     };
 
-    // Fetch existing sales data if editing
-    const fetchSalesData = async () => {
-        if (isEdit) {
-            try {
-                const response = await getSalesByID(id);
-                setSales(response);
-            } catch (error) {
-                console.error('Error fetching sales data:', error);
+
+    const fetchSaleData = async () => {
+        try {
+            const response = await getSalesByID(id);
+            setSale(response);
+            if (response.saleDate) {
+                const formattedDate = new Date(response.saleDate).toISOString().split('T')[0];
+                setSale(prev => ({ ...prev, saleDate: formattedDate }));
             }
+        } catch (error) {
+            console.error('Error fetching sale data:', error);
         }
     };
 
-    // Handle changes in form inputs
-    const handleChange = (e) => {
-        setSales({ ...sales, [e.target.name]: e.target.value });
-    };
+    const updateItem = (index, field, value) => {
+        const updatedItems = [...sale.items];
+        updatedItems[index][field] = value;
 
-    // Handle adding a medicine to the sales list
-    const addMedicine = (medicineId) => {
-        const selectedMedicine = purchases.find(m => m._id === medicineId);
-        if (selectedMedicine) {
-            const newItem = {
-                medicine: medicineId,
-                medicinename: selectedMedicine.medicinename,
-                quantity: 1,
-                pricePerUnit: selectedMedicine.pricePerUnit || 0,
-                totalPrice: selectedMedicine.pricePerUnit || 0,
-            };
-            const updatedItems = [...sales.items, newItem];
-            setSales({
-                ...sales,
-                items: updatedItems,
-                totalAmount: updatedItems.reduce((sum, item) => sum + item.totalPrice, 0),
-            });
+        if (field === 'medicine') {
+            const selectedMedicine = medicines.find(m => m.name === value);
+            updatedItems[index].pricePerUnit = selectedMedicine ? selectedMedicine.pricePerUnit : 0;
         }
-    };
 
-    // Handle quantity change for items
-    const updateQuantity = (index, value) => {
-        const updatedItems = [...sales.items];
-        updatedItems[index].quantity = parseInt(value, 10) || 1;
         updatedItems[index].totalPrice = updatedItems[index].quantity * updatedItems[index].pricePerUnit;
-        setSales({
-            ...sales,
+        setSale({
+            ...sale,
             items: updatedItems,
-            totalAmount: updatedItems.reduce((sum, item) => sum + item.totalPrice, 0),
+            totalAmount: updatedItems.reduce((sum, item) => sum + item.totalPrice, 0)
         });
     };
 
-    // Handle form submission
+
+    const addItem = () => {
+        setSale({ ...sale, items: [...sale.items, { medicine: '', quantity: 1, pricePerUnit: 0, totalPrice: 0 }] });
+    };
+
+    const removeItem = (index) => {
+        const updatedItems = sale.items.filter((_, i) => i !== index);
+        setSale({ ...sale, items: updatedItems, totalAmount: updatedItems.reduce((sum, item) => sum + item.totalPrice, 0) });
+    };
+
+    const handleChange = (e) => {
+        setSale({ ...sale, [e.target.name]: e.target.value });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            if (isEdit) {
-                await updateSales(id, sales);
-                alert('Sales record updated successfully!');
+            if (isSalesEdit) {
+                await updateSales(id, sale);
+                alert('Sale Updated Successfully');
             } else {
-                await addSales(sales);
-                alert('Sales record added successfully!');
+                sale.invoiceNumber = generateInvoiceNumber(); // Ensure invoice is set before submitting
+                await addSales(sale);
+                alert('Sale Added Successfully');
             }
             navigate('/sales');
         } catch (error) {
-            console.error('Error saving sales:', error);
-            alert('Failed to save sales record. Please try again.');
+            console.error('Error saving sale:', error);
+            alert('Failed to save sale. Try again.');
         }
     };
-
-    useEffect(() => {
-        fetchPurchases();
-        if (isEdit) fetchSalesData();
-    }, []);
 
     return (
         <div className="container py-4">
             <form onSubmit={handleSubmit} className="card p-4 shadow">
-                <h3 className="text-center">{isEdit ? 'Edit' : 'Create'} Sales</h3>
+                <h3>{isSalesEdit ? 'Edit' : 'Add'} Sale</h3>
 
                 <div className="mb-3">
                     <label className="form-label">Customer Name</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        name="customerName"
-                        value={sales.customerName}
-                        onChange={handleChange}
-                        required
-                    />
+                    <input type="text" name="customerName" className="form-control" value={sale.customerName} onChange={handleChange} required />
                 </div>
 
                 <div className="mb-3">
                     <label className="form-label">Customer Phone</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        name="customerPhone"
-                        value={sales.customerPhone}
-                        onChange={handleChange}
-                        required
-                    />
+                    <input type="text" name="customerPhone" className="form-control" value={sale.customerPhone} onChange={handleChange} required />
                 </div>
 
-                <div className="mb-3">
-                    <label className="form-label">Select Medicine</label>
-                    <select className="form-select" onChange={(e) => addMedicine(e.target.value)}>
-                        <option value="">-- Select Medicine --</option>
-                        {purchases.map(p => (
-                            <option key={p._id} value={p._id}>{p.medicinename}</option>
-                        ))}
-                    </select>
-                </div>
+                {sale.items.map((item, index) => (
+                    <div key={index} className="row g-3 align-items-center mb-3">
+                        <div className="col-md-4">
+                            <label className="form-label">Medicine</label>
+                            <select className="form-select" value={item.medicine}
+                                onChange={(e) => updateItem(index, 'medicine', e.target.value)} required>
+                                <option value="" disabled>Select Medicine</option>
+                                {medicines.map((m, idx) => (
+                                    <option key={idx} value={m.name}>{m.name}</option>
+                                ))}
+                            </select>
 
-                {sales.items.length > 0 && (
-                    <div className="mb-3">
-                        <label className="form-label">Selected Medicines</label>
-                        <ul className="list-group">
-                            {sales.items.map((item, index) => (
-                                <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-                                    {item.medicinename} - ₹{item.pricePerUnit} per unit
-                                    <input
-                                        type="number"
-                                        className="form-control w-25"
-                                        value={item.quantity}
-                                        onChange={(e) => updateQuantity(index, e.target.value)}
-                                    />
-                                    <span className="badge bg-success">₹{item.totalPrice}</span>
-                                </li>
-                            ))}
-                        </ul>
+                        </div>
+                        <div className="col-md-2">
+                            <label className="form-label">Quantity</label>
+                            <input type="number" className="form-control" value={item.quantity} onChange={(e) => updateItem(index, 'quantity', Number(e.target.value))} min="1" required />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="form-label">Price Per Unit</label>
+                            <input type="number" className="form-control" value={item.pricePerUnit} readOnly />
+                        </div>
+                        <div className="col-md-2">
+                            <label className="form-label">Total Price</label>
+                            <span className="form-control bg-light">{item.totalPrice}</span>
+                        </div>
+                        <div className="col-md-1">
+                            <label className="form-label">Action</label>
+                            <button type="button" className="btn btn-danger" onClick={() => removeItem(index)} disabled={sale.items.length === 1}>Remove</button>
+                        </div>
                     </div>
-                )}
+                ))}
 
-                <div className="mb-3">
-                    <label className="form-label">Total Amount</label>
-                    <input type="text" className="form-control" value={`₹${sales.totalAmount}`} disabled />
-                </div>
+                <button type="button" className="btn btn-primary mb-3" onClick={addItem}>Add Item</button>
 
                 <div className="mb-3">
                     <label className="form-label">Sale Date</label>
-                    <input
-                        type="date"
-                        className="form-control"
-                        name="saleDate"
-                        value={sales.saleDate}
-                        onChange={handleChange}
-                        required
-                    />
+                    <input type="date" name="saleDate" className="form-control" value={sale.saleDate} onChange={handleChange} required />
                 </div>
 
                 <div className="mb-3">
                     <label className="form-label">Payment Method</label>
-                    <select name="paymentMethod" className="form-select" value={sales.paymentMethod} onChange={handleChange} required>
+                    <select name="paymentMethod" className="form-select" value={sale.paymentMethod} onChange={handleChange} required>
                         <option value="Cash">Cash</option>
                         <option value="Card">Card</option>
                         <option value="UPI">UPI</option>
@@ -195,10 +177,12 @@ const SalesForm = ({ isEdit }) => {
 
                 <div className="mb-3">
                     <label className="form-label">Invoice Number</label>
-                    <input type="text" className="form-control" value={sales.invoiceNumber} disabled />
+                    <input type="text" className="form-control" value={sale.invoiceNumber} readOnly />
                 </div>
 
-                <button type="submit" className="btn btn-success">{isEdit ? 'Update' : 'Create'} Sale</button>
+                <p className="fw-bold">Total Amount: {sale.totalAmount}</p>
+
+                <button type="submit" className="btn btn-success">{isSalesEdit ? 'Update' : 'Create'} Sale</button>
             </form>
         </div>
     );
