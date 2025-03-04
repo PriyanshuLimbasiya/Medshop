@@ -101,11 +101,11 @@ const SalesForm = ({ isSalesEdit }) => {
                 await updateSales(id, sale);
                 alert('Sale Updated Successfully');
             } else {
-                sale.invoiceNumber = generateInvoiceNumber(); // Ensure invoice is set before submitting
+                sale.invoiceNumber = generateInvoiceNumber();
                 await addSales(sale);
                 alert('Sale Added Successfully');
             }
-            navigate('/sales');
+            navigate('/saleslist');
         } catch (error) {
             console.error('Error saving sale:', error);
             alert('Failed to save sale. Try again.');
@@ -131,7 +131,7 @@ const SalesForm = ({ isSalesEdit }) => {
                     <div key={index} className="row g-3 align-items-center mb-3">
                         <div className="col-md-4">
                             <label className="form-label">Medicine</label>
-                            <select className="form-select" value={item.medicine}
+                            <select className="form-select" value={item.name}
                                 onChange={(e) => updateItem(index, 'medicine', e.target.value)} required>
                                 <option value="" disabled>Select Medicine</option>
                                 {medicines.map((m, idx) => (

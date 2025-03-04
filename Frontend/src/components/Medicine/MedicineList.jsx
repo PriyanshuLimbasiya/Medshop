@@ -96,7 +96,7 @@ const MedicineList = () => {
     return (
         <div className="p-4 bg-light min-vh-100">
             <Toast ref={toast} />
-            <ConfirmDialog /> {/* Add ConfirmDialog component */}
+            <ConfirmDialog />
             
             <div className="card">
                 <div className="card-header d-flex justify-content-between align-items-center">

@@ -13,8 +13,7 @@ const salesSchema = new mongoose.Schema({
     items: [
         {
             medicine: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Purchase',
+                type:String,
                 required: true
             },
             quantity: {
