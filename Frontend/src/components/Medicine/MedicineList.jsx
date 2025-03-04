@@ -4,8 +4,8 @@ import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { MeterGroup } from 'primereact/metergroup';
 import { Toast } from "primereact/toast";
-import { confirmDialog } from 'primereact/confirmdialog';
-import { medicineList, deleteMed } from "../services/MedicineService";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog"; // Import ConfirmDialog
+import { deleteMed, medicineList } from "../services/MedicineService";
 import { useNavigate } from "react-router-dom";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
@@ -40,49 +40,47 @@ const MedicineList = () => {
             setLoading(false);
         }
     };
+
     useEffect(() => {
         fetchData();
     }, []);
 
-    
-
     const handleDelete = async (id) => {
+        try {
+            await deleteMed(id);
+            toast.current.show({
+                severity: 'success',
+                summary: 'Deleted',
+                detail: 'Medicine deleted successfully',
+                life: 3000
+            });
+            fetchData();
+        } catch (error) {
+            console.error("Error deleting medicine:", error);
+            toast.current.show({
+                severity: 'error',
+                summary: 'Delete Error',
+                detail: 'Failed to delete medicine',
+                life: 5000
+            });
+        }
+    };
+
+    const confirmDelete = (id) => {
         confirmDialog({
             message: 'Are you sure you want to delete this medicine?',
             header: 'Confirmation',
             icon: 'pi pi-exclamation-triangle',
-            acceptClassName: 'p-button-danger',
-            accept: () => confirmDeleteMedicine(id),
+            accept: () => handleDelete(id),
             reject: () => {
-                toast.current.show({ 
-                    severity: 'info', 
-                    summary: 'Cancelled', 
-                    detail: 'Deletion cancelled',
+                toast.current.show({
+                    severity: 'info',
+                    summary: 'Cancelled',
+                    detail: 'Delete action cancelled',
                     life: 3000
                 });
             }
         });
-    };
-
-    const confirmDeleteMedicine = async (id) => {
-        try {
-            await deleteMed(id);
-            setMedicines(medicines.filter((medicine) => medicine._id !== id));
-            toast.current.show({ 
-                severity: 'success', 
-                summary: 'Medicine Deleted', 
-                detail: 'The medicine has been successfully removed',
-                life: 3000
-            });
-        } catch (error) {
-            console.error("Error deleting medicine:", error);
-            toast.current.show({ 
-                severity: 'error', 
-                summary: 'Deletion Failed', 
-                detail: 'There was an error deleting the medicine',
-                life: 5000
-            });
-        }
     };
 
     const getFormattedDate = (dateString) => {
@@ -98,6 +96,7 @@ const MedicineList = () => {
     return (
         <div className="p-4 bg-light min-vh-100">
             <Toast ref={toast} />
+            <ConfirmDialog /> {/* Add ConfirmDialog component */}
             
             <div className="card">
                 <div className="card-header d-flex justify-content-between align-items-center">
@@ -156,7 +155,7 @@ const MedicineList = () => {
                                     </button>
                                     <button 
                                         className="btn btn-outline-danger" 
-                                        onClick={() => handleDelete(rowData._id)}
+                                        onClick={() => confirmDelete(rowData._id)}
                                     >
                                         <i className="pi pi-trash"></i>
                                     </button>
