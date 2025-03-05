@@ -74,7 +74,7 @@ const SalesList = () => {
             body: sales.map((sale) => [
                 sale.customerName,
                 sale.invoiceNumber,
-                formatCurrency(sale.totalAmount),
+                `$${sale.totalAmount}`,
                 sale.saleDate,
                 sale.paymentMethod,
             ]),
