@@ -29,8 +29,9 @@ connectDB()
 
     app.use("/api/medicine", verifyToken, medicineRoute);
     app.use("/api/purchase", verifyToken, purchaseRoute);
-    app.use("/api/supplier", verifyToken, supplierRoute);
+    
     app.use("/api/sales", verifyToken, salesRoute);
+    app.use("/api/supplier", verifyToken, supplierRoute);
 
     app.listen(process.env.PORT || 5000, () => {
       console.log("🚀 Server running");

@@ -54,6 +54,7 @@ const Navbar = () => {
             { path: "/medicinelist", icon: "fa-pills", label: "Medicines" },
             { path: "/purchase", icon: "fa-shopping-bag", label: "Purchases" },
             { path: "/saleslist", icon: "fa-shopping-cart", label: "Sales" },
+            { path:"/supplierlist",icon:"fa-solid fa-truck-field",label:"Supplier"}
           ].map(({ path, icon, label }) => (
             <button
               key={path}

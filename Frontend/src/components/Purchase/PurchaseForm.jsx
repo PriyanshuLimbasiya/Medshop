@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './purchaseform.css';
-import { getAllSupplier } from '../services/SupplierService';
+import { getAllSuppliers} from '../services/SupplierService';
 import { addPurchase, getPurchaseByID, updatePurchase } from '../services/PurchaseService';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -23,7 +23,7 @@ const PurchaseForm = ({ isPurchaseEdit }) => {
 
   const fetchSuppliers = async () => {
     try {
-      const response = await getAllSupplier();
+      const response = await getAllSuppliers();
       setSuppliers(response);
     } catch (error) {
       console.error('Error fetching suppliers:', error);

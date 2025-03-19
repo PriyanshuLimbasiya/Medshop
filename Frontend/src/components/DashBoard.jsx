@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { medicineList } from "./services/MedicineService";
-import { getAllSupplier } from "./services/SupplierService";
+import { getAllSuppliers } from "./services/SupplierService";
 import { useNavigate } from "react-router-dom";
 import { getAllSales } from "./services/SalesService";
 
@@ -37,7 +37,7 @@ const DashBoard = () => {
 
   const fetchSupplier = async () => {
     try {
-      const supplier = await getAllSupplier();
+      const supplier = await getAllSuppliers();
       setLength(prev => ({ ...prev, supplierLength: supplier.length }));
     } catch (error) {
       console.error("Error fetching suppliers:", error);

@@ -12,6 +12,7 @@ import PurchaseList from "./components/Purchase/PurchaseList";
 import PurchaseForm from "./components/Purchase/PurchaseForm";
 import SalesList from "./components/Sales/SalesList";
 import SalesForm from "./components/Sales/SalesForm";
+import SupplierList from "./components/Supplier/SupplierList";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -47,6 +48,7 @@ function App() {
           <Route path="/saleslist" element={<SalesList />} />
           <Route path="/salesform" element={<SalesForm isSalesEdit={false} />} />
           <Route path="/editsalesform/:id" element={<SalesForm isSalesEdit={true} />} />
+          <Route path="/supplierlist" element={<SupplierList/>}/>
         </Route>
       </Routes>
     </Router>

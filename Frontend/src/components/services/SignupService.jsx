@@ -6,10 +6,10 @@ export const SignupService = async (email, name, password) => {
    try {
       const response = await axios.post(
          API,
-         { email, name, password }, // Request body (correct way)
+         { email, name, password },
          {
             headers: {
-               'Content-Type': 'application/json' // Correct headers format
+               'Content-Type': 'application/json' 
             }
          }
       );
